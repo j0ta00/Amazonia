@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Amazonia</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="link">¿Has olvidado tu contraseña?
+        <a href="https://ps.w.org/under-construction-page/assets/screenshot-2.png?rev=1840052">Clica aquí</a>
+    </string>
+    <string name="emptyField">
+        El campo no puede estar vacio
+    </string>
+    <string name="required">*Campo Obligatorio</string>
+    <string name="appTittle">AMAZONIA</string>
+</resources>

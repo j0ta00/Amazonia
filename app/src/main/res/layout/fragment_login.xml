@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Login">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/plant_login"
+        android:padding="30dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/solid_color_background"
+            android:padding="20dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:text="@string/appTittle"></TextView>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inpDni"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                app:boxBackgroundColor="@color/white"
+                android:layout_marginBottom="20dp"
+                app:helperTextTextColor="@color/white"
+                android:inputType="text"
+                app:helperText="@string/required"
+                app:endIconMode="clear_text"
+                app:layout_constraintBottom_toTopOf="@id/inpPassword"
+                app:layout_constraintEnd_toEndOf="@id/inpPassword"
+                app:layout_constraintStart_toStartOf="@id/inpPassword"
+                app:startIconDrawable="@drawable/ic_baseline_person_24"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edDni"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Usuario(Dni)"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/inpPassword"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                app:placeholderText="Contraseña"
+                app:endIconMode="password_toggle"
+                app:boxBackgroundColor="@color/white"
+                app:helperText="@string/required"
+                app:helperTextTextColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:startIconDrawable="@drawable/ic_password"
+                app:layout_constraintTop_toTopOf="parent"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Contraseña"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/fgtPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:text="@string/link"
+                android:layout_marginTop="20dp"
+                app:layout_constraintStart_toStartOf="@id/inpPassword"
+                app:layout_constraintTop_toBottomOf="@id/inpPassword"
+                app:layout_constraintEnd_toEndOf="@id/inpPassword"
+                ></TextView>
+
+            <Button
+                android:id="@+id/logBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="#35524D"
+                android:drawableLeft="@drawable/ic_login"
+                android:padding="10dp"
+                android:text="Iniciar Sesión"
+                app:layout_constraintEnd_toEndOf="@id/fgtPassword"
+                app:layout_constraintStart_toStartOf="@id/fgtPassword"
+                app:layout_constraintTop_toBottomOf="@id/fgtPassword"></Button>
+
+            <Button
+                android:id="@+id/regBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="#35524D"
+                android:drawableLeft="@drawable/ic_person_add"
+                android:padding="10dp"
+                android:text="Registrarse"
+                app:layout_constraintEnd_toEndOf="@id/fgtPassword"
+                app:layout_constraintStart_toStartOf="@id/fgtPassword"
+                app:layout_constraintTop_toBottomOf="@id/logBtn"></Button>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</FrameLayout>
