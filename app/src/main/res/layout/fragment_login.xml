@@ -1,71 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Login">
-    <LinearLayout
+    >
+<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/plant_login"
+        android:background="@drawable/probi"
         android:padding="30dp">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/solid_color_background"
             android:padding="20dp">
+
+            <TextView
+                android:layout_marginTop="40dp"
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/averia_gruesa_libre"
+                android:text="@string/appTittle"
+                android:textColor="@color/white"
+                android:textSize="50dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"></TextView>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/averia_gruesa_libre"
+                android:text="@string/quote"
                 android:textColor="@color/white"
-                android:text="@string/appTittle"></TextView>
+                app:layout_constraintBottom_toTopOf="@+id/inpEmail"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView"
+                app:layout_constraintVertical_bias="0.529"></TextView>
+
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/inpDni"
+                android:id="@+id/inpEmail"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
-                app:boxBackgroundColor="@color/white"
                 android:layout_marginBottom="20dp"
-                app:helperTextTextColor="@color/white"
                 android:inputType="text"
-                app:helperText="@string/required"
+                app:boxBackgroundColor="@color/white"
                 app:endIconMode="clear_text"
+                app:helperText="@string/required"
+                app:helperTextTextColor="@color/white"
                 app:layout_constraintBottom_toTopOf="@id/inpPassword"
                 app:layout_constraintEnd_toEndOf="@id/inpPassword"
                 app:layout_constraintStart_toStartOf="@id/inpPassword"
-                app:startIconDrawable="@drawable/ic_baseline_person_24"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                app:startIconDrawable="@drawable/ic_email">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edDni"
+                    android:id="@+id/edEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Usuario(Dni)"/>
+                    android:hint="Email" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/inpPassword"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                app:placeholderText="Contraseña"
-                app:endIconMode="password_toggle"
                 app:boxBackgroundColor="@color/white"
+                app:endIconMode="password_toggle"
                 app:helperText="@string/required"
                 app:helperTextTextColor="@color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:startIconDrawable="@drawable/ic_password"
                 app:layout_constraintTop_toTopOf="parent"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                app:placeholderText="Contraseña"
+                app:startIconDrawable="@drawable/ic_password">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Contraseña"
-                    />
+                    android:hint="Password" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -73,13 +93,12 @@
                 android:id="@+id/fgtPassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:text="@string/link"
                 android:layout_marginTop="20dp"
-                app:layout_constraintStart_toStartOf="@id/inpPassword"
-                app:layout_constraintTop_toBottomOf="@id/inpPassword"
+                android:text="@string/link"
+                android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="@id/inpPassword"
-                ></TextView>
+                app:layout_constraintStart_toStartOf="@id/inpPassword"
+                app:layout_constraintTop_toBottomOf="@id/inpPassword"></TextView>
 
             <Button
                 android:id="@+id/logBtn"
@@ -89,7 +108,7 @@
                 android:backgroundTint="#35524D"
                 android:drawableLeft="@drawable/ic_login"
                 android:padding="10dp"
-                android:text="Iniciar Sesión"
+                android:text="Sign In"
                 app:layout_constraintEnd_toEndOf="@id/fgtPassword"
                 app:layout_constraintStart_toStartOf="@id/fgtPassword"
                 app:layout_constraintTop_toBottomOf="@id/fgtPassword"></Button>
@@ -102,11 +121,53 @@
                 android:backgroundTint="#35524D"
                 android:drawableLeft="@drawable/ic_person_add"
                 android:padding="10dp"
-                android:text="Registrarse"
+                android:text="Register"
                 app:layout_constraintEnd_toEndOf="@id/fgtPassword"
                 app:layout_constraintStart_toStartOf="@id/fgtPassword"
                 app:layout_constraintTop_toBottomOf="@id/logBtn"></Button>
 
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/averia_gruesa_libre"
+                android:text="@string/signInWith"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.497"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/regBtn"></TextView>
+
+            <ImageButton
+                android:id="@+id/facebookButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="40dp"
+                android:background="@drawable/facebook_logo"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"></ImageButton>
+
+            <ImageButton
+                android:id="@+id/googleButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginRight="40dp"
+                android:background="@drawable/google_logo"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"></ImageButton>
+
+            <ImageButton
+                android:id="@+id/instagramButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/instagram_logo"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/googleButton"
+                app:layout_constraintStart_toEndOf="@+id/facebookButton"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"></ImageButton>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
-</FrameLayout>
+</ScrollView>

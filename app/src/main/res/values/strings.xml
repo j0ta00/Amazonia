@@ -2,12 +2,20 @@
     <string name="app_name">Amazonia</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="link">¿Has olvidado tu contraseña?
-        <a href="https://ps.w.org/under-construction-page/assets/screenshot-2.png?rev=1840052">Clica aquí</a>
+    <string name="link">Forgot Password?
+        <a href="https://ps.w.org/under-construction-page/assets/screenshot-2.png?rev=1840052">Click here!</a>
     </string>
     <string name="emptyField">
-        El campo no puede estar vacio
+        This field can not be empty
     </string>
-    <string name="required">*Campo Obligatorio</string>
+    <string name="passwordFormat">
+        The password must contains  at least eight characters, at least one number and both lower and uppercase letters
+    </string>
+    <string name="required">*Required</string>
     <string name="appTittle">AMAZONIA</string>
+    <string name="quote">Embedded in these walls of green</string>
+    <string name="signInWith">Sign In With:</string>
+    <string name="facebook_app_id">527003928886027</string>
+    <string name="fb_login_protocol_scheme">fb1234</string>
+    <string name="facebook_client_token">56789</string>
 </resources>
