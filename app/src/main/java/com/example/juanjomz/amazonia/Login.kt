@@ -16,6 +16,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import com.example.juanjomz.amazonia.databinding.FragmentLoginBinding
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -66,7 +67,8 @@ class Login : Fragment(), View.OnClickListener {
                 Firebase.auth.signInWithCredential(credential)
                     .addOnCompleteListener(requireActivity(), OnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            Toast.makeText(requireContext(), "Bien", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Successfully logged in", Toast.LENGTH_SHORT).show()
+                            Navigation.findNavController(binding.root).navigate(R.id.plantIdentification)
                         } else {
                             Toast.makeText(requireContext(), "Mal", Toast.LENGTH_SHORT).show()
                         }
@@ -152,7 +154,8 @@ class Login : Fragment(), View.OnClickListener {
                     val credential = FacebookAuthProvider.getCredential(it.accessToken.toString())
                     auth.signInWithCredential(credential).addOnCompleteListener {
                         if (it.isSuccessful) {
-                            Toast.makeText(requireContext(),"Bien",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_SHORT).show()
+                            Navigation.findNavController(binding.root).navigate(R.id.plantIdentification)
                         } else {
                             Toast.makeText(requireContext(),"Mal",Toast.LENGTH_SHORT).show()
                         }
@@ -187,7 +190,8 @@ class Login : Fragment(), View.OnClickListener {
                     binding.edPassword.text.toString().trim()
                 ).addOnCompleteListener(requireActivity(), OnCompleteListener { task->
                     if(task.isSuccessful){
-                        Toast.makeText(requireContext(),"Bien",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_SHORT).show()
+                        Navigation.findNavController(binding.root).navigate(R.id.plantIdentification)
                     }else{
                         Toast.makeText(requireContext(),"Mal",Toast.LENGTH_SHORT).show()
                     }
@@ -222,7 +226,8 @@ class Login : Fragment(), View.OnClickListener {
                 binding.edPassword.text.toString().trim()
             ).addOnCompleteListener(requireActivity(), OnCompleteListener { task->
                 if(task.isSuccessful){
-                    Toast.makeText(requireContext(),"Bien",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_SHORT).show()
+                    Navigation.findNavController(binding.root).navigate(R.id.plantIdentification)
                 }else{
                     Toast.makeText(requireContext(),"Mal",Toast.LENGTH_SHORT).show()
                 }

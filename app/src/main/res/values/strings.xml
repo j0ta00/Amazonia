@@ -14,6 +14,7 @@
     <string name="required">*Required</string>
     <string name="appTittle">AMAZONIA</string>
     <string name="quote">Embedded in these walls of green</string>
+    <string name="folderPath">plantFolder</string>
     <string name="signInWith">Sign In With:</string>
     <string name="facebook_app_id">527003928886027</string>
     <string name="fb_login_protocol_scheme">fb1234</string>
