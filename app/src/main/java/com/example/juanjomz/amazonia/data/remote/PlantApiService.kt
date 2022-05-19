@@ -26,8 +26,6 @@ interface PlantApiService {
                 .baseUrl(RETROFIT_PLANTS_API_BASE_URL)
                 .addConverterFactory(MoshiConverterFactory.create())
                 .build()
-
-
     }
 }
 

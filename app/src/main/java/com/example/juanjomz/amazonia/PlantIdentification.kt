@@ -32,6 +32,14 @@ import android.provider.DocumentsContract
 import android.util.Log
 
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import com.bumptech.glide.Glide
+import com.example.juanjomz.amazonia.data.remote.SearchApiService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -165,6 +173,16 @@ class PlantIdentification : Fragment() {
     private fun setupVMObservers(){
         viewModel.plant.observe(viewLifecycleOwner){
             binding.prueba.text=it.commonName
+            lifecycleScope.launch(Dispatchers.IO) {
+                delay(500)
+                val a = SearchApiService.getImage(it.commonName)
+                withContext(Dispatchers.Main){
+                    Glide.with(requireContext())
+                        .load(a[1])
+                        .override(600, 200)  // it don't maintain aspect ratio
+                        .into(binding.image)
+                }
+            }
         }
 
     }

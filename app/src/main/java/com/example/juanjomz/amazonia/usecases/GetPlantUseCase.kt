@@ -6,5 +6,5 @@ import okhttp3.RequestBody
 
 class GetPlantUseCase(private val plantRepository: PlantRepository) {
 
- suspend operator fun invoke(requestbody:RequestBody): PlantBO? = plantRepository.getPlant(requestbody)
+ suspend operator fun invoke(requestbody:RequestBody): PlantBO = plantRepository.getPlant(requestbody)
 }

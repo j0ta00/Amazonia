@@ -6,5 +6,5 @@ import okhttp3.RequestBody
 
 class PlantRepository(private val plantRemoteDataSource: PlantRemoteDataSource){
 
-    suspend fun getPlant(requestbody:RequestBody): PlantBO? = plantRemoteDataSource.getRemotePlant(requestbody)
+    suspend fun getPlant(requestbody:RequestBody): PlantBO = plantRemoteDataSource.getRemotePlant(requestbody)
 }
