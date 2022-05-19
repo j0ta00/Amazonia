@@ -10,7 +10,8 @@ import com.example.juanjomz.amazonia.domain.PlantBO
 import com.example.juanjomz.amazonia.usecases.GetPlantUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 class PlantIdentificationVM : ViewModel(){
     private val getPlantUseCase = GetPlantUseCase(PlantRepository(PlantRemoteDataSourceImpl()))
@@ -19,12 +20,11 @@ class PlantIdentificationVM : ViewModel(){
 
 
 
-    fun loadPlant(photo: File, organ:String){
-
-
-        //dispatcher io para llamadas largas a apis y cosas así
-            _plant.postValue(getPlantUseCase.invoke(photo,organ))
-
+    fun loadPlant( requestbody: RequestBody){
+        viewModelScope.launch(Dispatchers.IO) {
+            //dispatcher io para llamadas largas a apis y cosas así
+            _plant.postValue(getPlantUseCase.invoke(requestbody))
+        }
     }
 
 }

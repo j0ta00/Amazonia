@@ -1,10 +1,11 @@
 package com.example.juanjomz.amazonia.data.remote.model
 
+import androidx.lifecycle.GeneratedAdapter
 import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class PlantDTO(
-    @SerializedName("scientificName")
-    val scientificName: String?,
-    @SerializedName("commonName")
-    val commonName: String?,
-    @SerializedName("family") val family: String?)
+    @Json(name="results")
+    val result: Any?)
