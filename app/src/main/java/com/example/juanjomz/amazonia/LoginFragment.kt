@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
@@ -29,6 +30,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -68,7 +70,7 @@ class Login : Fragment(), View.OnClickListener {
                     .addOnCompleteListener(requireActivity(), OnCompleteListener { task ->
                         if (task.isSuccessful) {
                             Toast.makeText(requireContext(), "Successfully logged in", Toast.LENGTH_SHORT).show()
-                            Navigation.findNavController(binding.root).navigate(R.id.plantIdentification)
+                            Navigation.findNavController(binding.root).navigate(R.id.galleryFragment)
                         } else {
                             Toast.makeText(requireContext(), "Mal", Toast.LENGTH_SHORT).show()
                         }
@@ -98,6 +100,11 @@ class Login : Fragment(), View.OnClickListener {
         Firebase.initialize(context!!)
         auth = Firebase.auth
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        activity?.findViewById<BottomNavigationView>(R.id.navigationMenu)?.visibility=View.INVISIBLE
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -155,7 +162,7 @@ class Login : Fragment(), View.OnClickListener {
                     auth.signInWithCredential(credential).addOnCompleteListener {
                         if (it.isSuccessful) {
                             Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_SHORT).show()
-                            Navigation.findNavController(binding.root).navigate(R.id.plantIdentification)
+                            Navigation.findNavController(binding.root).navigate(R.id.galleryFragment)
                         } else {
                             Toast.makeText(requireContext(),"Mal",Toast.LENGTH_SHORT).show()
                         }
@@ -191,7 +198,7 @@ class Login : Fragment(), View.OnClickListener {
                 ).addOnCompleteListener(requireActivity(), OnCompleteListener { task->
                     if(task.isSuccessful){
                         Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_SHORT).show()
-                        Navigation.findNavController(binding.root).navigate(R.id.plantIdentification)
+                        Navigation.findNavController(binding.root).navigate(R.id.galleryFragment)
                     }else{
                         Toast.makeText(requireContext(),"Mal",Toast.LENGTH_SHORT).show()
                     }
@@ -227,7 +234,7 @@ class Login : Fragment(), View.OnClickListener {
             ).addOnCompleteListener(requireActivity(), OnCompleteListener { task->
                 if(task.isSuccessful){
                     Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_SHORT).show()
-                    Navigation.findNavController(binding.root).navigate(R.id.plantIdentification)
+                    Navigation.findNavController(binding.root).navigate(R.id.galleryFragment)
                 }else{
                     Toast.makeText(requireContext(),"Mal",Toast.LENGTH_SHORT).show()
                 }

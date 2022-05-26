@@ -14,9 +14,9 @@ import java.util.List;
 
 public class SearchApiService {
 
-    public static List<String> getImage(String plant) {
+    public static List<String> getImage(String plantName) {
         String userAgent = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36";
-        String url = "https://www.google.com/search?site=imghp&tbm=isch&source=hp&q=galan de noche planta&gws_rd=cr";
+        String url = "https://www.google.com/search?site=imghp&tbm=isch&source=hp&q="+plantName+" plant&gws_rd=cr";
         List<String> resultUrls = new ArrayList();
         try {
             Document doc = Jsoup.connect(url).userAgent(userAgent).referrer("https://www.google.com/").get();

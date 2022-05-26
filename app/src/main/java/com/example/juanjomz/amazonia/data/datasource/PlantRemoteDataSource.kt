@@ -5,6 +5,6 @@ import okhttp3.RequestBody
 
 interface PlantRemoteDataSource {
 
-    suspend fun getRemotePlant(requestbody:RequestBody): PlantBO
+    suspend fun getRemotePlant(requestbody:RequestBody): List<PlantBO>
 
 }

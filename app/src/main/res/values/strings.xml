@@ -19,4 +19,10 @@
     <string name="facebook_app_id">527003928886027</string>
     <string name="fb_login_protocol_scheme">fb1234</string>
     <string name="facebook_client_token">56789</string>
+    <string name="saveInGallery">Save Image</string>
+    <string name="identify">Identify</string>
+    <string name="retry">RETRY</string>
+    <string name="cancel">cancel</string>
+    <string name="accept">Add to species</string>
+    <string name="whatOrganIs">what part of the plant is:</string>
 </resources>

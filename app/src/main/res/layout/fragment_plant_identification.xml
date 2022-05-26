@@ -1,17 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#99000000"
     tools:context=".PlantIdentification">
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:background="@drawable/imageviewborder"
+        android:padding="15dp"
+        android:layout_centerInParent="true"
+        app:layout_constraintBottom_toTopOf="@+id/btnRetry"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></ImageView>
+    </FrameLayout>
+
+    <Spinner
+        android:id="@+id/spnOrgan"
+        style="@style/AppTheme.PopupOverlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="13dp"
+        android:layout_marginLeft="30dp"
+        android:popupBackground="@drawable/solid_color_background_spinner"
+        app:layout_constraintEnd_toEndOf="@+id/textView3"
+        app:layout_constraintStart_toStartOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/textView3"></Spinner>
+
+    <Button
+        android:id="@+id/btnDetect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="7dp"
+        android:backgroundTint="#22ba64"
+        android:drawableLeft="@drawable/ic_baseline_search_24"
+        android:text="@string/identify"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView3"></Button>
+
+    <Button
+        android:id="@+id/btnRetry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="57dp"
+        android:backgroundTint="#22ba64"
+        android:drawableLeft="@drawable/ic_baseline_retry"
+        android:text="@string/retry"
+        app:layout_constraintBottom_toTopOf="@+id/textView3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"></Button>
 
     <TextView
-        android:id="@+id/prueba"
-        android:layout_height="wrap_content" android:layout_width="wrap_content"
-        android:text="prueba"/>
-<ImageView
-    android:id="@+id/image"
-    android:layout_width="350dp"
-    android:layout_height="350dp"></ImageView>
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:textColor="@color/white"
+        android:layout_marginBottom="216dp"
+        android:text="@string/whatOrganIs"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"></TextView>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

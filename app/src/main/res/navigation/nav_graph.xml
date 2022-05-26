@@ -11,12 +11,36 @@
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" >
         <action
-            android:id="@+id/action_login_to_plantIdentification"
-            app:destination="@id/plantIdentification" />
+            android:id="@+id/action_login_to_galleryFragment"
+            app:destination="@id/galleryFragment" />
     </fragment>
     <fragment
         android:id="@+id/plantIdentification"
         android:name="com.example.juanjomz.amazonia.PlantIdentification"
         android:label="fragment_plant_identification"
         tools:layout="@layout/fragment_plant_identification" />
+    <fragment
+        android:id="@+id/galleryFragment"
+        android:name="com.example.juanjomz.amazonia.GalleryFragment"
+        android:label="fragment_gallery"
+        tools:layout="@layout/fragment_gallery" >
+        <action
+            android:id="@+id/action_galleryFragment_to_plantIdentification"
+            app:destination="@id/plantIdentification" />
+        <action
+            android:id="@+id/action_galleryFragment_to_plantListFragment"
+            app:destination="@id/plantListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/plantListFragment"
+        android:name="com.example.juanjomz.amazonia.PlantListFragment"
+        android:label="fragment_plant_list"
+        tools:layout="@layout/fragment_plant_list" >
+        <action
+            android:id="@+id/action_plantListFragment_to_galleryFragment"
+            app:destination="@id/galleryFragment" />
+        <action
+            android:id="@+id/action_plantListFragment_to_plantIdentification"
+            app:destination="@id/plantIdentification" />
+    </fragment>
 </navigation>
