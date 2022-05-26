@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/galleryFragment"
+        android:icon="@drawable/ic_baseline_photo_gallery"
+        android:title="GALLERY" />
+    <item android:id="@+id/plantListFragment"
+        android:icon="@drawable/ic_baseline_list"
+        android:title="SPECIES" />
+    <item android:id="@+id/plantIdentification"
+        android:icon="@drawable/ic_baseline_photo_camera"
+        android:title="DETECTOR" />
+    <item android:id="@+id/userProperties"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="USER" />
+</menu>
