@@ -1,6 +1,11 @@
 package com.example.juanjomz.amazonia.data.remote;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import com.bumptech.glide.Glide;
+import com.example.juanjomz.amazonia.domain.PlantBO;
 
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -10,6 +15,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class SearchApiService {
@@ -28,5 +34,12 @@ public class SearchApiService {
             e.printStackTrace();
         }
         return resultUrls;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static List<String> getImages(List<PlantBO> species){
+        List<String> results=new LinkedList<String>();
+        species.forEach(specie->results.add(getImage(specie.getCommonName()==null?specie.getScientificName():specie.getCommonName()).get(1)));
+        return results;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.juanjomz.amazonia
+package com.example.juanjomz.amazonia.ui.view.Fragments
 
 import android.app.Activity.RESULT_OK
 import android.content.ContentValues.TAG
@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import com.example.juanjomz.amazonia.R
 import com.example.juanjomz.amazonia.databinding.FragmentLoginBinding
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -98,6 +99,7 @@ class Login : Fragment(), View.OnClickListener {
     ): View? {
         binding = FragmentLoginBinding.inflate(inflater, container, false)
         Firebase.initialize(context!!)
+        activity?.actionBar?.hide()
         auth = Firebase.auth
         return binding.root
     }

@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#99000000"
-    tools:context=".PlantIdentification">
+    android:background="#99000000">
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="350dp"

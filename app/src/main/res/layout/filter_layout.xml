@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="5dp"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Order by:"></TextView>
+<RadioGroup
+    android:id="@+id/rdgFilter"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
+
+    <RadioButton
+        android:id="@+id/rdbAToZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From A to Z"></RadioButton>
+
+    <RadioButton
+        android:id="@+id/rdbZToA"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From Z to A"></RadioButton>
+</RadioGroup>
+    <TextView
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="5dp"
+        android:textColor="@color/black"
+        android:textSize="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Search by:"></TextView>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+        <CheckBox
+            android:id="@+id/chbCName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cmon. Name"></CheckBox>
+        <CheckBox
+            android:id="@+id/chbSName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Scientc. Name"></CheckBox>
+        <CheckBox
+            android:id="@+id/chbFamily"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Family"></CheckBox>
+    </LinearLayout>
+</LinearLayout>

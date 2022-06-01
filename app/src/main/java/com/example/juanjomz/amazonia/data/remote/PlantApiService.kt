@@ -12,7 +12,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
 
 interface PlantApiService {
-    @POST("all?api-key=2b105W6lnY8BYl7P71d6JoONO")
+    @POST("all?api-key=2b10jyFu75OAAbrp1cjScClP")
     suspend fun getPlant(@Body partFile: RequestBody): Response<PlantDTO>
 
     companion object {

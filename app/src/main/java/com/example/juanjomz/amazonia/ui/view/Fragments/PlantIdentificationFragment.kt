@@ -1,4 +1,4 @@
-package com.example.juanjomz.amazonia
+package com.example.juanjomz.amazonia.ui.view.Fragments
 
 import android.Manifest
 import android.app.Activity
@@ -35,7 +35,21 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import android.graphics.drawable.BitmapDrawable
 import android.widget.*
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import com.bumptech.glide.load.engine.executor.GlideExecutor.UncaughtThrowableStrategy.LOG
+import com.example.juanjomz.amazonia.R
+import com.example.juanjomz.amazonia.domain.PlantBO
+import com.example.juanjomz.amazonia.usecases.AddPlantUseCase
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import android.app.AlertDialog as AlertDialog
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -52,6 +66,10 @@ class PlantIdentification : Fragment(), View.OnClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var specieList: List<PlantBO>? = null
+    private var imagesList: List<String>?=null
+    private lateinit var auth: FirebaseAuth
+    private var prueba : androidx.appcompat.app.AlertDialog? = null
     private  var resultSelected = 0
     private lateinit var binding: FragmentPlantIdentificationBinding
     private val organs = listOf("flower","leaf","fruit")
@@ -77,8 +95,11 @@ class PlantIdentification : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?,
     ): View? {
         binding= FragmentPlantIdentificationBinding.inflate(inflater,container,false)
+        Firebase.initialize(context!!)
+        activity?.actionBar?.hide()
+        auth = Firebase.auth
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            checkExternalStoragePermission();
+            checkExternalStoragePermission()
         }
         makePhoto()
         return binding.root
@@ -105,6 +126,7 @@ class PlantIdentification : Fragment(), View.OnClickListener {
         binding.btnRetry.setOnClickListener(this)
         binding.image.setImageResource(R.drawable.takeaphoto)
         binding.image.tag = "default_image"
+
         binding.spnOrgan.adapter=
             context?.let { ArrayAdapter(it,R.layout.spinner_item,organs) }
 
@@ -150,13 +172,29 @@ class PlantIdentification : Fragment(), View.OnClickListener {
 
     private fun setupVMObservers(){
         viewModel.plant.observe(viewLifecycleOwner){
+            specieList=it
             searchImage()
+
         }
         viewModel.image.observe(viewLifecycleOwner){
-                showDialogPlantIdentificated()
+            imagesList=it
+            showDialogPlantIdentificated()
+        }
+        viewModel.specieAdded.observe(viewLifecycleOwner){
+            showResultSpecieAdded(it)
         }
 
     }
+
+    private fun showResultSpecieAdded(result:Boolean){
+        if(result){
+            Toast.makeText(requireContext(),"Specie added correctly!!",Toast.LENGTH_SHORT).show()
+        }else{
+            Toast.makeText(requireContext(),"Something went wrong, check your internet connection",Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
         private fun makePhoto(){
             responseLauncher.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
         }
@@ -186,7 +224,7 @@ class PlantIdentification : Fragment(), View.OnClickListener {
             when (p0.id) {
                 binding.btnDetect.id->identifyPlant()
                 binding.btnRetry.id->makePhoto()
-                R.id.btnNext->{if(resultSelected< viewModel.plant.value!!.size){
+                R.id.btnNext->{if(resultSelected< specieList?.size!!){
                     resultSelected++
                     searchImage()
                 }
@@ -243,42 +281,58 @@ class PlantIdentification : Fragment(), View.OnClickListener {
         }
     }
     fun searchImage(){
-        if(viewModel.plant.value?.get(resultSelected)?.commonName!="null"){
-        viewModel.plant.value?.get(resultSelected)?.commonName?.let { viewModel.searchImage(it) }
+        if(specieList?.get(resultSelected)?.commonName!="null"){
+            specieList?.get(resultSelected)?.commonName?.let { viewModel.searchImage(it) }
         }else{
-            viewModel.plant.value?.get(resultSelected)?.scientificName?.let { viewModel.searchImage(it) }
+            specieList!![resultSelected]?.scientificName?.let { viewModel.searchImage(it) }
         }
     }
     fun showDialogPlantIdentificated(){
         val dialogLayout=layoutInflater.inflate(R.layout.plant_identificated_dialog,null)
         fillDialogView(dialogLayout)
-        MaterialAlertDialogBuilder(requireContext())
+        if(prueba==null) {
+            prueba = createDialog(dialogLayout)
+        }else{
+            prueba!!.dismiss()
+            prueba = createDialog(dialogLayout)
+            prueba!!.show()
+        }
+
+    }
+
+    private fun createDialog(dialogLayout:View):androidx.appcompat.app.AlertDialog{
+        return  MaterialAlertDialogBuilder(requireContext())
             .setTitle("This plant could be:").setView(dialogLayout)
             .setNeutralButton(resources.getString(R.string.cancel)) { dialog, which ->
-                // Respond to neutral button press
+
             }
             .setPositiveButton(resources.getString(R.string.accept)) { dialog, which ->
-                // Respond to positive button press
+               specieList?.get(resultSelected)?.let {
+                    auth.currentUser?.email?.let { it2 ->
+                        viewModel.addPlant(it2,
+                            it)
+                    }
+                }
             }.show()
     }
 
     private fun fillDialogView(dialogLayout:View){
-        if(viewModel.plant.value?.get(resultSelected)?.commonName=="null"){
-            dialogLayout.findViewById<TextView>(R.id.txtPlantIdentificated).text=viewModel.plant.value?.get(resultSelected)?.scientificName
+        if( specieList?.get(resultSelected)?.commonName=="null"){
+            dialogLayout.findViewById<TextView>(R.id.txtPlantIdentificated).text= specieList?.get(resultSelected)?.scientificName
         }else{
-            dialogLayout.findViewById<TextView>(R.id.txtPlantIdentificated).text=viewModel.plant.value?.get(resultSelected)?.commonName
+            dialogLayout.findViewById<TextView>(R.id.txtPlantIdentificated).text= specieList?.get(resultSelected)?.commonName
         }
         Glide.with(requireContext())
-            .load(viewModel.image.value?.get(1))
+            .load(imagesList?.get(1))
             .into(dialogLayout.findViewById(R.id.imagePlantIdentificated1))
         Glide.with(requireContext())
-            .load(viewModel.image.value?.get(2))
+            .load(imagesList?.get(2))
             .into(dialogLayout.findViewById(R.id.imagePlantIdentificated2))
         Glide.with(requireContext())
-            .load(viewModel.image.value?.get(3))
+            .load(imagesList?.get(3))
             .into(dialogLayout.findViewById(R.id.imagePlantIdentificated3))
         Glide.with(requireContext())
-            .load(viewModel.image.value?.get(4))
+            .load(imagesList?.get(4))
             .into(dialogLayout.findViewById(R.id.imagePlantIdentificated4))
         dialogLayout.findViewById<ImageButton>(R.id.btnNext).setOnClickListener(this)
         dialogLayout.findViewById<ImageButton>(R.id.btnPrevious).setOnClickListener(this)

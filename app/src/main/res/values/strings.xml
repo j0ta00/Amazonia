@@ -25,4 +25,5 @@
     <string name="cancel">cancel</string>
     <string name="accept">Add to species</string>
     <string name="whatOrganIs">what part of the plant is:</string>
+    <string name="acceptFilters">Accept</string>
 </resources>
