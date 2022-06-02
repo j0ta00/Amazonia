@@ -245,12 +245,14 @@ class PlantIdentification : Fragment(), View.OnClickListener {
                 bindingDialog?.btnNext?.id -> {
                     if (resultSelected < specieList?.size!!) {
                         resultSelected++
+                        showdialog=true
                         searchImage()
                     }
                 }
                 bindingDialog?.btnPrevious?.id -> {
                     if (resultSelected > 0) {
                         resultSelected--
+                        showdialog=true
                         searchImage()
                     }
                 }
@@ -305,7 +307,7 @@ class PlantIdentification : Fragment(), View.OnClickListener {
                     file.name,
                     RequestBody.create(MediaType.parse(getRealPathFromUri(requireContext(),
                         imageUri)), file))
-                builder.addFormDataPart("organs", "leaf")
+                builder.addFormDataPart("organs", binding.spnOrgan.selectedItem.toString())
                 builder.setType(MultipartBody.FORM)
                 var requestBody = builder.build()
                 viewModel.loadPlant(requestBody)
