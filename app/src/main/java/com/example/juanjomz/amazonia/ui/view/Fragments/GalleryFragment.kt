@@ -111,7 +111,7 @@ class GalleryFragment : Fragment() {
             binding.progressBar.visibility=View.GONE
             refresh=false
         }
-        activityViewModel.refreshSpecies.observe(viewLifecycleOwner){
+        activityViewModel.refreshImages.observe(viewLifecycleOwner){
             refresh=it
         }
     }

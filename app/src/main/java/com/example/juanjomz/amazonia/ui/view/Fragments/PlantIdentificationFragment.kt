@@ -66,6 +66,7 @@ class PlantIdentification : Fragment(), View.OnClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var showdialog=true
     private var specieList: List<PlantBO>? = null
     private var imagesList: List<String>? = null
     private val activityViewModel : ActivityVM by activityViewModels()
@@ -182,10 +183,15 @@ class PlantIdentification : Fragment(), View.OnClickListener {
             searchImage()
 
         }
+        activityViewModel.showDialog.observe(viewLifecycleOwner){
+            showdialog=it
+        }
         viewModel.image.observe(viewLifecycleOwner) {
             imagesList = it
             binding.progressBar.visibility=View.GONE
-            showDialogPlantIdentificated()
+            if(showdialog) {
+                showDialogPlantIdentificated()
+            }
         }
         viewModel.specieAdded.observe(viewLifecycleOwner) {
             activityViewModel.refreshSpecies(true)
@@ -233,6 +239,7 @@ class PlantIdentification : Fragment(), View.OnClickListener {
         if (p0 != null) {
             when (p0.id) {
                 binding.btnDetect.id ->{ identifyPlant()
+                    activityViewModel.changeShowDialog(true)
                     binding.progressBar.visibility=View.VISIBLE}
                 binding.btnRetry.id -> makePhoto()
                 bindingDialog?.btnNext?.id -> {
@@ -303,10 +310,8 @@ class PlantIdentification : Fragment(), View.OnClickListener {
                 var requestBody = builder.build()
                 viewModel.loadPlant(requestBody)
             }
-
+            activityViewModel.refreshImages(true)
         }
-        activityViewModel.refreshImages(true)
-
     }
 
     fun searchImage() {
@@ -320,6 +325,7 @@ class PlantIdentification : Fragment(), View.OnClickListener {
     fun showDialogPlantIdentificated() {
         bindingDialog=PlantIdentificatedDialogBinding.inflate(LayoutInflater.from(requireContext()))
         fillDialogView()
+        activityViewModel.changeShowDialog(false)
          if (dialog != null) {
             dialog!!.dismiss()
         }
@@ -339,7 +345,6 @@ class PlantIdentification : Fragment(), View.OnClickListener {
                             it)
                     }
                 }
-
                 dialog.dismiss()
             }.show()
     }

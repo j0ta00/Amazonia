@@ -12,7 +12,8 @@ class ActivityVM: ViewModel() {
     private val _refreshImages = MutableLiveData<Boolean>()
     val refreshSpecies: LiveData<Boolean> get() = _refreshSpecies
     private val _refreshSpecies = MutableLiveData<Boolean>()
-
+    val showDialog: LiveData<Boolean> get() = _showDialog
+    private val _showDialog = MutableLiveData<Boolean>()
 
     fun refreshSpecies(refresh:Boolean){
         viewModelScope.launch(Dispatchers.IO) {
@@ -22,6 +23,11 @@ class ActivityVM: ViewModel() {
     fun refreshImages(refresh:Boolean){
         viewModelScope.launch(Dispatchers.IO) {
             _refreshImages.postValue(refresh)
+        }
+    }
+    fun changeShowDialog(refresh:Boolean){
+        viewModelScope.launch(Dispatchers.IO) {
+            _showDialog.postValue(refresh)
         }
     }
 }
