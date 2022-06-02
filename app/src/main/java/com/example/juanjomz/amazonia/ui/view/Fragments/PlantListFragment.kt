@@ -32,8 +32,14 @@ import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 import android.view.Gravity
-
 import android.widget.TextView
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavArgument
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph
+import androidx.navigation.findNavController
+import com.example.juanjomz.amazonia.ui.viewmodel.ActivityVM
+import com.example.juanjomz.amazonia.ui.viewmodel.GalleryVM
 import com.google.rpc.Help
 
 
@@ -52,8 +58,10 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
     private var param1: String? = null
     private var param2: String? = null
     private var speciesList: List<PlantBO>? = null
+    private var refresh = true
     private var imageList: LinkedList<String>? = LinkedList()
-    private var bindingDialog: FilterLayoutBinding?=null
+    private var bindingDialog: FilterLayoutBinding? = null
+    private val activityViewModel : ActivityVM by activityViewModels()
     private var filtereSpeciesList: LinkedList<PlantBO> = LinkedList()
     private val viewModel: PlantListVM by viewModels()
     private lateinit var auth: FirebaseAuth
@@ -80,41 +88,54 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
         super.onViewCreated(view, savedInstanceState)
         setupVMObservers()
         setHasOptionsMenu(true)
-        layoutInflater.inflate(R.layout.plant_identificated_dialog,null)
+        layoutInflater.inflate(R.layout.plant_identificated_dialog, null)
         binding.filters.setOnClickListener(this)
         binding.searchview.setOnQueryTextListener(this)
         auth.currentUser?.email?.let { viewModel.loadSpeciesList(it) }
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(refresh){
+            binding.progressBar.visibility = View.VISIBLE
+        }
+    }
+
     private fun setupVMObservers() {
         viewModel.speciesList.observe(viewLifecycleOwner) {
             speciesList = it
             viewModel.loadListOfImages(it)
-            if(filtereSpeciesList.isNullOrEmpty()) {
-                filtereSpeciesList.addAll( it)
+            if (filtereSpeciesList.isNullOrEmpty()) {
+                filtereSpeciesList.addAll(it)
             }
         }
         viewModel.imageList.observe(viewLifecycleOwner) {
-            if(imageList.isNullOrEmpty()) {
+            if (imageList.isNullOrEmpty()) {
                 imageList?.addAll(it)
             }
-             buildList()
+            buildList()
+        }
+        activityViewModel.refreshSpecies.observe(viewLifecycleOwner){
+                refresh=it
         }
 
     }
 
 
-
     private fun buildList() {
-        binding.plantList.adapter =
-            filtereSpeciesList?.let {
-                imageList?.let { it1 ->
-                    PlantAdapter(it, it1) { itemSelected ->
-                        onItemSelected(itemSelected)
+        if(refresh) {
+            binding.plantList.adapter =
+                filtereSpeciesList?.let {
+                    imageList?.let { it1 ->
+                        PlantAdapter(it, it1) { itemSelected ->
+                            onItemSelected(itemSelected)
+                        }
                     }
                 }
-            }
+        }
+        binding.progressBar.visibility=View.GONE
+        refresh=false
     }
 
     companion object {
@@ -143,7 +164,7 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
 
 
     override fun onClick(p0: View?) {
-        bindingDialog= FilterLayoutBinding.inflate(LayoutInflater.from(getContext()))
+        bindingDialog = FilterLayoutBinding.inflate(LayoutInflater.from(requireContext()))
         val title = TextView(requireContext())
         title.text = "FILTERS"
         title.setBackgroundColor(Color.DKGRAY)
@@ -154,17 +175,20 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
         MaterialAlertDialogBuilder(requireContext())
             .setCustomTitle(title).setView(bindingDialog!!.root)
             .setNeutralButton(resources.getString(R.string.cancel)) { dialog, which ->
-                bindingDialog!!.chbSName.isActivated=true
-                bindingDialog!!.chbCName.isActivated=true
-                bindingDialog!!.chbFamily.isActivated=false
+                bindingDialog!!.chbSName.isActivated = true
+                bindingDialog!!.chbCName.isActivated = true
+                bindingDialog!!.chbFamily.isActivated = false
             }
             .setPositiveButton(resources.getString(R.string.acceptFilters)) { dialog, which ->
-                if(bindingDialog!!.rdbAToZ.isChecked){
-                    filtereSpeciesList=LinkedList(filtereSpeciesList.sortedBy { it.commonName }.sortedBy { it.scientificName })
-                }else if(bindingDialog!!.rdbZToA.isChecked){
-                    filtereSpeciesList=LinkedList(filtereSpeciesList.sortedByDescending { it.commonName }.sortedByDescending{ it.scientificName })
+                if (bindingDialog!!.rdbAToZ.isChecked) {
+                    filtereSpeciesList = LinkedList(filtereSpeciesList.sortedBy { it.commonName }
+                        .sortedBy { it.scientificName })
+                } else if (bindingDialog!!.rdbZToA.isChecked) {
+                    filtereSpeciesList =
+                        LinkedList(filtereSpeciesList.sortedByDescending { it.commonName }
+                            .sortedByDescending { it.scientificName })
                 }
-                binding.plantList.adapter=
+                binding.plantList.adapter =
                     imageList?.let {
                         PlantAdapter(filtereSpeciesList, it) { itemSelected ->
                             onItemSelected(itemSelected)
@@ -178,14 +202,17 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        if(!speciesList.isNullOrEmpty()) {
+        if (!speciesList.isNullOrEmpty()) {
             filtereSpeciesList.clear()
             val searchText = newText!!.lowercase()
             if (searchText.isNotEmpty()) {
                 speciesList?.forEach {
                     var alreadyAdded = false
                     if (bindingDialog == null) {
-                        if (it.scientificName.lowercase().contains(searchText) || it.commonName.lowercase().contains(searchText)) {
+                        if (it.scientificName.lowercase()
+                                .contains(searchText) || it.commonName.lowercase()
+                                .contains(searchText)
+                        ) {
                             filtereSpeciesList.add(it)
                         }
                     } else {
@@ -216,7 +243,6 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
         }
         return false
     }
-
 
 
 }

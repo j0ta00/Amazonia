@@ -13,6 +13,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import android.graphics.BitmapFactory
 
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.net.Uri
 import android.opengl.Visibility
 import android.os.Build
@@ -22,8 +23,13 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.AdapterView
 import androidx.annotation.RequiresApi
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavArgument
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph
+import androidx.navigation.findNavController
 import com.example.juanjomz.amazonia.R
 import com.example.juanjomz.amazonia.databinding.ActivityMainBinding
 import com.example.juanjomz.amazonia.databinding.FragmentGalleryBinding
@@ -37,6 +43,10 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 import kotlin.io.path.pathString
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration
+import com.example.juanjomz.amazonia.ui.view.Fragments.GalleryFragment.GridSpacingItemDecoration
+import com.example.juanjomz.amazonia.ui.viewmodel.ActivityVM
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -53,8 +63,10 @@ class GalleryFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var refresh:Boolean=true
     private val viewModel : GalleryVM by viewModels()
     private lateinit var binding: FragmentGalleryBinding
+    private val activityViewModel : ActivityVM by activityViewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -79,13 +91,28 @@ class GalleryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         activity?.findViewById<BottomNavigationView>(R.id.navigationMenu)?.visibility=View.VISIBLE
         setupVMObservers()
+        binding.rcvGallery.addItemDecoration(GridSpacingItemDecoration(3,0,false))
         viewModel.loadLocalStorageImages("/storage/emulated/0/Pictures/plantFolder")
-
+    }
+    override fun onResume() {
+        super.onResume()
+        if(refresh){
+            binding.progressBar.visibility = View.VISIBLE
+        }
     }
 
     private fun setupVMObservers(){
         viewModel.imageList.observe(viewLifecycleOwner) {image->
-                binding.rcvGallery.adapter = ImageAdapter(image) { onItemSelected(it) }
+            if(refresh) {
+                binding.rcvGallery.adapter = ImageAdapter(image) {
+                    onItemSelected(it)
+                }
+            }
+            binding.progressBar.visibility=View.GONE
+            refresh=false
+        }
+        activityViewModel.refreshSpecies.observe(viewLifecycleOwner){
+            refresh=it
         }
     }
     companion object {
@@ -149,6 +176,21 @@ class GalleryFragment : Fragment() {
      fun onItemSelected(p0: Bitmap) {
 
     }
-
+    inner class GridSpacingItemDecoration(
+        private val spanCount: Int,
+        private val spacing: Int,
+        private val includeEdge: Boolean,
+    ) : ItemDecoration() {
+        override fun getItemOffsets(
+            outRect: Rect,
+            view: View,
+            parent: RecyclerView,
+            state: RecyclerView.State,
+        ) {
+                super.getItemOffsets(outRect, view, parent, state);
+                val itemWidth = parent.width / 3
+                view.layoutParams.width = itemWidth
+        }
+    }
 
 }

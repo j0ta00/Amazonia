@@ -1,10 +1,13 @@
 package com.example.juanjomz.amazonia.ui.view.activities
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.navigation.NavArgument
 import androidx.navigation.findNavController
+
 
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -27,5 +30,7 @@ class MainActivity : AppCompatActivity() {
             R.id.plantListFragment,
             R.id.plantIdentification))
         setupActionBarWithNavController(navController,appBarConfiguration)
+
     }
+
 }

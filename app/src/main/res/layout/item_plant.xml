@@ -3,15 +3,15 @@
     android:layout_width="match_parent"
     android:background="@drawable/solid_background_recyclerview"
     android:layout_marginBottom="20dp"
-    android:layout_height="120dp">
+    android:layout_height="100dp">
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="80dp"
-        android:layout_marginTop="15dp"
+        android:layout_gravity="center"
         android:layout_marginLeft="10dp"
         android:layout_height="80dp"
         android:background="@drawable/specie_image_border"
-        android:padding="12dp"
+        android:padding="11dp"
         android:layout_centerInParent="true">
     <ImageView
         android:id="@+id/plantImage"
@@ -19,7 +19,7 @@
         android:layout_height="match_parent"></ImageView></FrameLayout>
     <TextView
         android:id="@+id/specie"
-        android:layout_marginTop="45dp"
+        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_marginLeft="20dp"
         android:textSize="20dp"

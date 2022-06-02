@@ -18,7 +18,14 @@
         android:id="@+id/plantIdentification"
         android:name="com.example.juanjomz.amazonia.ui.view.Fragments.PlantIdentification"
         android:label="fragment_plant_identification"
-        tools:layout="@layout/fragment_plant_identification" />
+        tools:layout="@layout/fragment_plant_identification" >
+        <action
+            android:id="@+id/action_plantIdentification_to_plantListFragment"
+            app:destination="@id/plantListFragment" />
+        <action
+            android:id="@+id/action_plantIdentification_to_galleryFragment"
+            app:destination="@id/galleryFragment" />
+    </fragment>
     <fragment
         android:id="@+id/galleryFragment"
         android:name="com.example.juanjomz.amazonia.ui.view.Fragments.GalleryFragment"
