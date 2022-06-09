@@ -59,7 +59,6 @@ class GalleryFragment : Fragment(), View.OnClickListener {
     private val adapter by lazy{ImageAdapter(itemsSelecteds,{showBigImageDialog(it)},
         {view:ImageView,it:Int->onItemPressed(view,it)})}
     private val imageIndexToDelete = LinkedList<Int>()
-    private var refresh: Boolean = true
     private var bindingDialog: BigImagesLayoutBinding? = null
     private val viewModel: GalleryVM by viewModels()
     private lateinit var binding: FragmentGalleryBinding
@@ -96,21 +95,11 @@ class GalleryFragment : Fragment(), View.OnClickListener {
         viewModel.loadLocalStorageImages(getString(R.string.filePath)+auth.currentUser?.email)
     }
 
-    override fun onResume() {
-        super.onResume()
-        if(refresh){
-            binding.progressBar.visibility = View.VISIBLE
-        }
-    }
     private fun setupVMObservers() {
         viewModel.imageList.observe(viewLifecycleOwner) { image ->
-            if(refresh) {
-                binding.progressBar.visibility = View.VISIBLE
-                adapter.submitList(image)
-                activityViewModel.refreshImages(false)
-            }
-            refresh=false
-            binding.progressBar.visibility = View.GONE
+            binding.cdLoading.visibility = View.VISIBLE
+            adapter.submitList(image)
+            binding.cdLoading.visibility = View.GONE
         }
         viewModel.imagesDeleted.observe(viewLifecycleOwner) {
             imagesDeleted(it)
@@ -125,15 +114,20 @@ class GalleryFragment : Fragment(), View.OnClickListener {
             }
             adapter.submitList(null)
             adapter.submitList(ArrayList(newList))
-            binding.progressBar.visibility = View.GONE
+            binding.cdLoading.visibility = View.GONE
             binding.imgbDeleteImages.visibility = View.GONE
             binding.txtImagesToDeleteCount.visibility = View.GONE
             imageIndexToDelete.clear()
         }
         activityViewModel.refreshImages.observe(viewLifecycleOwner) {
-            refresh = it
+            binding.cdLoading.visibility = View.VISIBLE
+           if(it) {
+               viewModel.loadLocalStorageImages(getString(R.string.filePath))
+           }else{
+               activityViewModel.refreshImages(false)
+               binding.cdLoading.visibility = View.GONE
+           }
         }
-
     }
 
     private fun imagesDeleted(result: Boolean) {
@@ -220,7 +214,7 @@ class GalleryFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(p0: View?) {
-        binding.progressBar.visibility = View.VISIBLE
+        binding.cdLoading.visibility = View.VISIBLE
         viewModel.deleteImages(getString(R.string.filePath)+auth.currentUser?.email, imageIndexToDelete)
     }
 }

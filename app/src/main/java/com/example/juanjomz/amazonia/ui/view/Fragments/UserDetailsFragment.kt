@@ -25,11 +25,17 @@ import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import android.content.Intent.getIntent
 import android.system.Os.remove
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.findFragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.example.juanjomz.amazonia.databinding.FragmentGalleryBinding
 import com.example.juanjomz.amazonia.databinding.FragmentPlantListBinding
+import com.example.juanjomz.amazonia.ui.viewmodel.GalleryVM
+import com.example.juanjomz.amazonia.ui.viewmodel.PlantListVM
 
 
 // TODO: Rename parameter arguments, choose names that match

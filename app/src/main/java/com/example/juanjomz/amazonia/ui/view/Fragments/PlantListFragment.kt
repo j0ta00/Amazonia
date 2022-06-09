@@ -88,7 +88,7 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
     private fun showFirestoreError() {
         Toast.makeText(requireContext(), getString(R.string.showConnectionError), Toast.LENGTH_LONG)
             .show()
-        binding.progressBar.visibility = View.GONE
+        binding.cdLoading.visibility = View.GONE
     }
 
     private fun setupVMObservers() {
@@ -130,7 +130,7 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
                 }
                 buildList()
             }else if(it.size==speciesList?.size){
-                binding.progressBar.visibility=View.VISIBLE
+                binding.cdLoading.visibility=View.VISIBLE
             }
         }
     }
@@ -139,7 +139,7 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
     private fun buildList() {
         filtereSpeciesList
         adapter?.submitList(filtereSpeciesList)
-        binding.progressBar.visibility = View.GONE
+        binding.cdLoading.visibility = View.GONE
         activityViewModel.refreshSpecies(false)
     }
 
