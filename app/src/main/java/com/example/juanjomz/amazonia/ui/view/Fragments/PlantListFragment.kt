@@ -79,6 +79,7 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
         super.onViewCreated(view, savedInstanceState)
         setupVMObservers()
         setHasOptionsMenu(true)
+        activityViewModel.refreshImages(true)
         layoutInflater.inflate(R.layout.plant_identificated_dialog, null)
         binding.filters.setOnClickListener(this)
         binding.searchview.setOnQueryTextListener(this)

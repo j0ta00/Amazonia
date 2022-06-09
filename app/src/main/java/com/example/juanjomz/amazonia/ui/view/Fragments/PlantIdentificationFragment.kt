@@ -136,6 +136,7 @@ class PlantIdentification : Fragment(), View.OnClickListener {
         setupVMObservers()
         binding.btnDetect.setOnClickListener(this)
         binding.btnRetry.setOnClickListener(this)
+        activityViewModel.refreshImages(true)
         binding.image.setImageResource(R.drawable.takeaphoto)
         binding.image.tag = "default_image"
         binding.spnOrgan.adapter =context?.let { ArrayAdapter(it, R.layout.spinner_item, organs) }

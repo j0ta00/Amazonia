@@ -1,7 +1,6 @@
 package com.example.juanjomz.amazonia.ui.view.Fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,14 +25,13 @@ import android.content.Intent.getIntent
 import android.system.Os.remove
 import android.util.Log
 import androidx.activity.viewModels
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.findFragment
+import androidx.fragment.app.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.example.juanjomz.amazonia.databinding.FragmentGalleryBinding
 import com.example.juanjomz.amazonia.databinding.FragmentPlantListBinding
+import com.example.juanjomz.amazonia.ui.viewmodel.ActivityVM
 import com.example.juanjomz.amazonia.ui.viewmodel.GalleryVM
 import com.example.juanjomz.amazonia.ui.viewmodel.PlantListVM
 
@@ -54,6 +52,7 @@ class UserDetailsFragment : Fragment(), View.OnClickListener {
     private var param2: String? = null
     private lateinit var binding: FragmentUserDetailsBinding
     private lateinit var auth: FirebaseAuth
+    private val activityViewModel : ActivityVM by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +78,7 @@ class UserDetailsFragment : Fragment(), View.OnClickListener {
         binding.txtUserPassword.text = getString(R.string.passwordAsteriks)
         binding.facebookUrlButton.setOnClickListener(this)
         binding.logOutButton.setOnClickListener(this)
+        activityViewModel.refreshImages(true)
         binding.instaUrlButton.setOnClickListener(this)
         binding.twitterUrlButton.setOnClickListener(this)
         binding.btnSave.setOnClickListener(this)

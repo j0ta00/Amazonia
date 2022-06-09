@@ -59,6 +59,7 @@ class GalleryFragment : Fragment(), View.OnClickListener {
     private val adapter by lazy{ImageAdapter(itemsSelecteds,{showBigImageDialog(it)},
         {view:ImageView,it:Int->onItemPressed(view,it)})}
     private val imageIndexToDelete = LinkedList<Int>()
+    private var refresh: Boolean = true
     private var bindingDialog: BigImagesLayoutBinding? = null
     private val viewModel: GalleryVM by viewModels()
     private lateinit var binding: FragmentGalleryBinding
@@ -95,10 +96,18 @@ class GalleryFragment : Fragment(), View.OnClickListener {
         viewModel.loadLocalStorageImages(getString(R.string.filePath)+auth.currentUser?.email)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if(refresh){
+            binding.cdLoading.visibility = View.VISIBLE
+        }
+    }
     private fun setupVMObservers() {
         viewModel.imageList.observe(viewLifecycleOwner) { image ->
-            binding.cdLoading.visibility = View.VISIBLE
-            adapter.submitList(image)
+            if(refresh) {
+                binding.cdLoading.visibility = View.VISIBLE
+                adapter.submitList(image)
+            }
             binding.cdLoading.visibility = View.GONE
         }
         viewModel.imagesDeleted.observe(viewLifecycleOwner) {
@@ -120,14 +129,9 @@ class GalleryFragment : Fragment(), View.OnClickListener {
             imageIndexToDelete.clear()
         }
         activityViewModel.refreshImages.observe(viewLifecycleOwner) {
-            binding.cdLoading.visibility = View.VISIBLE
-           if(it) {
-               viewModel.loadLocalStorageImages(getString(R.string.filePath))
-           }else{
-               activityViewModel.refreshImages(false)
-               binding.cdLoading.visibility = View.GONE
-           }
+            refresh = it
         }
+
     }
 
     private fun imagesDeleted(result: Boolean) {
