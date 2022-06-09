@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <ImageView
+        android:id="@+id/imgSpecieDetail"
+        android:layout_marginTop="10dp"
+        android:layout_width="100dp"
+        android:layout_gravity="center"
+        android:layout_height="100dp"></ImageView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@color/black"
+        android:textSize="25dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/averia_gruesa_libre"
+        android:text="Common Name"
+        ></TextView>
+    <TextView
+        android:id="@+id/specieCommonName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/averia_gruesa_libre"
+        ></TextView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:textSize="25dp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/averia_gruesa_libre"
+        android:text="Scientific Name"
+        ></TextView>
+    <TextView
+        android:id="@+id/specieScientificName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/averia_gruesa_libre"
+        ></TextView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="25dp"
+        android:textColor="@color/black"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/averia_gruesa_libre"
+        android:text="Family"
+        ></TextView>
+    <TextView
+        android:id="@+id/Family"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/averia_gruesa_libre"
+        ></TextView>
+
+</LinearLayout>

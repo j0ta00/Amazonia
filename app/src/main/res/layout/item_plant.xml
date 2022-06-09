@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@drawable/solid_background_recyclerview"
+    android:background="@drawable/specie_image_border"
     android:layout_marginBottom="20dp"
-    android:layout_height="100dp">
+    android:layout_height="120dp">
     <FrameLayout
         android:id="@+id/frameLayout"
         android:layout_width="80dp"
         android:layout_gravity="center"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="12dp"
         android:layout_height="80dp"
-        android:background="@drawable/specie_image_border"
+        android:background="@drawable/white_background_with_border"
         android:padding="11dp"
         android:layout_centerInParent="true">
     <ImageView
@@ -21,6 +21,7 @@
         android:id="@+id/specie"
         android:layout_gravity="center"
         android:layout_width="wrap_content"
+        android:fontFamily="@font/averia_gruesa_libre"
         android:layout_marginLeft="20dp"
         android:textSize="20dp"
         android:layout_height="wrap_content"></TextView>

@@ -6,17 +6,47 @@
     android:background="#99000000"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
 <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
     android:textSize="20dp"
     android:layout_marginTop="15dp"
     android:fontFamily="@font/averia_gruesa_libre"
     android:text="GALLERY"
     android:padding="10dp"
-    android:background="@drawable/solid_background_recyclerview"
-    android:layout_gravity="center"
+    android:background="@drawable/white_background"
+
     ></TextView>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|right">
+        <TextView
+            android:layout_marginTop="3dp"
+            android:id="@+id/txtImagesToDeleteCount"
+            android:fontFamily="@font/averia_gruesa_libre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_marginRight="5dp"
+            android:textSize="25dp"
+            android:visibility="gone"
+            ></TextView>
+        <ImageButton
+            android:id="@+id/imgbDeleteImages"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:visibility="gone"
+            android:background="@drawable/white_background"
+            android:src="@drawable/ic_baseline_delete_24"
+            ></ImageButton>
+        </LinearLayout>
+    </LinearLayout>
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="wrap_content"

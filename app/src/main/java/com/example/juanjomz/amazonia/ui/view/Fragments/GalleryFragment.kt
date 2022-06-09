@@ -1,52 +1,43 @@
 package com.example.juanjomz.amazonia.ui.view.Fragments
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-import com.example.juanjomz.amazonia.databinding.FragmentBlankBinding
-import com.example.juanjomz.amazonia.databinding.FragmentPlantListBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import android.graphics.BitmapFactory
 
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.Rect
-import android.net.Uri
-import android.opengl.Visibility
 import android.os.Build
-import android.os.Environment
-import android.provider.DocumentsContract
-import android.provider.MediaStore
-import android.util.Log
-import android.widget.AdapterView
+import android.view.Gravity
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.view.drawToBitmap
+import androidx.core.view.get
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavArgument
-import androidx.navigation.NavController
-import androidx.navigation.NavGraph
-import androidx.navigation.findNavController
 import com.example.juanjomz.amazonia.R
-import com.example.juanjomz.amazonia.databinding.ActivityMainBinding
 import com.example.juanjomz.amazonia.databinding.FragmentGalleryBinding
 import com.example.juanjomz.amazonia.ui.view.adapter.ImageAdapter
 import com.example.juanjomz.amazonia.ui.viewmodel.GalleryVM
-import com.example.juanjomz.amazonia.ui.viewmodel.PlantIdentificationVM
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.util.*
-import kotlin.io.path.pathString
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
-import com.example.juanjomz.amazonia.ui.view.Fragments.GalleryFragment.GridSpacingItemDecoration
+import com.example.juanjomz.amazonia.databinding.BigImagesLayoutBinding
 import com.example.juanjomz.amazonia.ui.viewmodel.ActivityVM
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlin.collections.ArrayList
+import android.graphics.drawable.BitmapDrawable
+import androidx.fragment.app.FragmentManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -59,14 +50,20 @@ private const val ARG_PARAM2 = "param2"
  * Use the [GalleryFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class GalleryFragment : Fragment() {
+class GalleryFragment : Fragment(), View.OnClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private var refresh:Boolean=true
-    private val viewModel : GalleryVM by viewModels()
+    private lateinit var auth: FirebaseAuth
+    private val itemsSelecteds=mutableListOf<Bitmap>()
+    private val adapter by lazy{ImageAdapter(itemsSelecteds,{showBigImageDialog(it)},
+        {view:ImageView,it:Int->onItemPressed(view,it)})}
+    private val imageIndexToDelete = LinkedList<Int>()
+    private var refresh: Boolean = true
+    private var bindingDialog: BigImagesLayoutBinding? = null
+    private val viewModel: GalleryVM by viewModels()
     private lateinit var binding: FragmentGalleryBinding
-    private val activityViewModel : ActivityVM by activityViewModels()
+    private val activityViewModel: ActivityVM by activityViewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -80,41 +77,76 @@ class GalleryFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        binding=FragmentGalleryBinding.inflate(inflater,container,false)
+        binding = FragmentGalleryBinding.inflate(inflater, container, false)
+        binding.rcvGallery.adapter=adapter
         return binding.root
     }
-
 
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        activity?.findViewById<BottomNavigationView>(R.id.navigationMenu)?.visibility=View.VISIBLE
+        activity?.findViewById<BottomNavigationView>(R.id.navigationMenu)?.visibility = View.VISIBLE
+        getString(R.string.emptyField)
         setupVMObservers()
-        binding.rcvGallery.addItemDecoration(GridSpacingItemDecoration(3,0,false))
-        viewModel.loadLocalStorageImages("/storage/emulated/0/Pictures/plantFolder")
+        Firebase.initialize(context!!)
+        auth = Firebase.auth
+        binding.imgbDeleteImages.setOnClickListener(this)
+        binding.rcvGallery.addItemDecoration(GridSpacingItemDecoration(3, 0, false))
+        viewModel.loadLocalStorageImages(getString(R.string.filePath)+auth.currentUser?.email)
     }
+
     override fun onResume() {
         super.onResume()
         if(refresh){
             binding.progressBar.visibility = View.VISIBLE
         }
     }
-
-    private fun setupVMObservers(){
-        viewModel.imageList.observe(viewLifecycleOwner) {image->
+    private fun setupVMObservers() {
+        viewModel.imageList.observe(viewLifecycleOwner) { image ->
             if(refresh) {
-                binding.rcvGallery.adapter = ImageAdapter(image) {
-                    onItemSelected(it)
-                }
+                binding.progressBar.visibility = View.VISIBLE
+                adapter.submitList(image)
+                activityViewModel.refreshImages(false)
             }
-            binding.progressBar.visibility=View.GONE
             refresh=false
+            binding.progressBar.visibility = View.GONE
         }
-        activityViewModel.refreshImages.observe(viewLifecycleOwner){
-            refresh=it
+        viewModel.imagesDeleted.observe(viewLifecycleOwner) {
+            imagesDeleted(it)
+            var newList= mutableListOf<Bitmap>()
+            var newList2= mutableListOf<Bitmap>()
+            newList.addAll(adapter.currentList)
+            imageIndexToDelete.forEach { imagesIndex ->
+                newList2.add(newList[imagesIndex])
+            }
+            newList2.forEach{
+                newList.remove(it)
+            }
+            adapter.submitList(null)
+            adapter.submitList(ArrayList(newList))
+            binding.progressBar.visibility = View.GONE
+            binding.imgbDeleteImages.visibility = View.GONE
+            binding.txtImagesToDeleteCount.visibility = View.GONE
+            imageIndexToDelete.clear()
         }
+        activityViewModel.refreshImages.observe(viewLifecycleOwner) {
+            refresh = it
+        }
+
     }
+
+    private fun imagesDeleted(result: Boolean) {
+        if (result) {
+            Toast.makeText(requireContext(), "Images Deleted", Toast.LENGTH_SHORT)
+        } else {
+            Toast.makeText(requireContext(),
+                "Something happens, deleted is wrong",
+                Toast.LENGTH_SHORT)
+        }
+        activityViewModel.refreshImages(true)
+    }
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -134,48 +166,42 @@ class GalleryFragment : Fragment() {
                 }
             }
     }
-    private fun getRealPathFromUri(context: Context, uri: Uri): String {
-        var realPath = String()
-        uri.path?.let { path ->
-            val databaseUri: Uri
-            val selection: String?
-            val selectionArgs: Array<String>?
-            if (path.contains("/document/image:")) {
-                databaseUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                selection = "_id=?"
-                selectionArgs = arrayOf(DocumentsContract.getDocumentId(uri).split(":")[1])
+
+    fun showBigImageDialog(p0: Bitmap) {
+        val title = TextView(requireContext())
+        title.text = "IMAGE"
+        title.setBackgroundColor(Color.DKGRAY)
+        title.setPadding(10, 10, 10, 10)
+        title.gravity = Gravity.CENTER
+        title.setTextColor(Color.WHITE)
+        title.textSize = 20f
+        bindingDialog = BigImagesLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+        bindingDialog!!.imgvimage.setImageBitmap(p0)
+        MaterialAlertDialogBuilder(requireContext())
+            .setCustomTitle(title).setView(bindingDialog!!.root).show()
+    }
+
+    fun onItemPressed(image: ImageView, index: Int) {
+        if (!imageIndexToDelete.contains(index)) {
+            binding.imgbDeleteImages.visibility = View.VISIBLE
+            binding.txtImagesToDeleteCount.visibility = View.VISIBLE
+             image.setBackgroundColor(Color.HSVToColor(floatArrayOf(112f, 172f, 224f)))
+            imageIndexToDelete.add(index)
+            itemsSelecteds.add((image.drawable as BitmapDrawable).bitmap)
+            binding.txtImagesToDeleteCount.text = imageIndexToDelete.size.toString()
+        } else {
+            image.setBackgroundColor(Color.WHITE)
+            imageIndexToDelete.remove(index)
+            itemsSelecteds.remove((image.drawable as BitmapDrawable).bitmap)
+            if (imageIndexToDelete.size == 0) {
+                binding.imgbDeleteImages.visibility = View.GONE
+                binding.txtImagesToDeleteCount.visibility = View.GONE
             } else {
-                databaseUri = uri
-                selection = null
-                selectionArgs = null
-            }
-            try {
-                val column = "_data"
-                val projection = arrayOf(column)
-                val cursor = context.contentResolver.query(
-                    databaseUri,
-                    projection,
-                    selection,
-                    selectionArgs,
-                    null
-                )
-                cursor?.let {
-                    if (it.moveToFirst()) {
-                        val columnIndex = cursor.getColumnIndexOrThrow(column)
-                        realPath = cursor.getString(columnIndex)
-                    }
-                    cursor.close()
-                }
-            } catch (e: Exception) {
-                println(e)
+                binding.txtImagesToDeleteCount.text = imageIndexToDelete.size.toString()
             }
         }
-        return realPath
     }
 
-     fun onItemSelected(p0: Bitmap) {
-
-    }
     inner class GridSpacingItemDecoration(
         private val spanCount: Int,
         private val spacing: Int,
@@ -187,10 +213,14 @@ class GalleryFragment : Fragment() {
             parent: RecyclerView,
             state: RecyclerView.State,
         ) {
-                super.getItemOffsets(outRect, view, parent, state);
-                val itemWidth = parent.width / 3
-                view.layoutParams.width = itemWidth
+            super.getItemOffsets(outRect, view, parent, state);
+            val itemWidth = parent.width / 3
+            view.layoutParams.width = itemWidth
         }
     }
 
+    override fun onClick(p0: View?) {
+        binding.progressBar.visibility = View.VISIBLE
+        viewModel.deleteImages(getString(R.string.filePath)+auth.currentUser?.email, imageIndexToDelete)
+    }
 }

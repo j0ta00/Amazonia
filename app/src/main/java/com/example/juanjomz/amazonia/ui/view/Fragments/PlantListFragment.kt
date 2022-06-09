@@ -1,20 +1,11 @@
 package com.example.juanjomz.amazonia.ui.view.Fragments
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.view.View.inflate
 import androidx.fragment.app.Fragment
-import android.widget.AdapterView
-import android.widget.Button
-import android.widget.ImageButton
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.example.juanjomz.amazonia.R
-import com.example.juanjomz.amazonia.databinding.ActivityMainBinding.inflate
 import com.example.juanjomz.amazonia.databinding.FragmentPlantListBinding
 import com.example.juanjomz.amazonia.domain.PlantBO
 import com.example.juanjomz.amazonia.ui.view.adapter.PlantAdapter
@@ -25,22 +16,15 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import androidx.appcompat.widget.SearchView
 import com.example.juanjomz.amazonia.databinding.FilterLayoutBinding
-import com.example.juanjomz.amazonia.databinding.PlantIdentificatedDialogBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.collections.ArrayList
 import android.view.Gravity
-import android.widget.TextView
+import android.widget.*
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.NavArgument
-import androidx.navigation.NavController
-import androidx.navigation.NavGraph
-import androidx.navigation.findNavController
+import com.bumptech.glide.Glide
+import com.example.juanjomz.amazonia.databinding.SpecieDetailsLayoutBinding
+import com.example.juanjomz.amazonia.domain.PlantWithImageBO
 import com.example.juanjomz.amazonia.ui.viewmodel.ActivityVM
-import com.example.juanjomz.amazonia.ui.viewmodel.GalleryVM
-import com.google.rpc.Help
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -56,13 +40,18 @@ private const val ARG_PARAM2 = "param2"
 class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTextListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
+    private var refresh: Boolean = true
     private var param2: String? = null
+    private var speciesListWithImages: MutableList<PlantWithImageBO> = mutableListOf()
     private var speciesList: List<PlantBO>? = null
-    private var refresh = true
-    private var imageList: LinkedList<String>? = LinkedList()
+    private val adapter by lazy {
+        filtereSpeciesList?.let { list -> PlantAdapter(list) { onItemSelected(it) } }
+    }
+    private var imageList: List<String>? = LinkedList()
     private var bindingDialog: FilterLayoutBinding? = null
-    private val activityViewModel : ActivityVM by activityViewModels()
-    private var filtereSpeciesList: LinkedList<PlantBO> = LinkedList()
+    private var bindingDetailsDialog: SpecieDetailsLayoutBinding? = null
+    private val activityViewModel: ActivityVM by activityViewModels()
+    private var filtereSpeciesList: LinkedList<PlantWithImageBO> = LinkedList()
     private val viewModel: PlantListVM by viewModels()
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentPlantListBinding
@@ -81,6 +70,8 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
         binding = FragmentPlantListBinding.inflate(inflater, container, false)
         Firebase.initialize(context!!)
         auth = Firebase.auth
+        binding.plantList.adapter = adapter
+        auth.currentUser?.email?.let { viewModel.loadSpeciesList(it) }
         return binding.root
     }
 
@@ -91,51 +82,65 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
         layoutInflater.inflate(R.layout.plant_identificated_dialog, null)
         binding.filters.setOnClickListener(this)
         binding.searchview.setOnQueryTextListener(this)
-        auth.currentUser?.email?.let { viewModel.loadSpeciesList(it) }
-
     }
 
-    override fun onResume() {
-        super.onResume()
-        if(refresh){
-            binding.progressBar.visibility = View.VISIBLE
-        }
+
+    private fun showFirestoreError() {
+        Toast.makeText(requireContext(), getString(R.string.showConnectionError), Toast.LENGTH_LONG)
+            .show()
+        binding.progressBar.visibility = View.GONE
     }
 
     private fun setupVMObservers() {
+        activityViewModel.refreshSpecies.observe(viewLifecycleOwner){
+            refresh=it
+        }
+
         viewModel.speciesList.observe(viewLifecycleOwner) {
-            speciesList = it
-            viewModel.loadListOfImages(it)
-            if (filtereSpeciesList.isNullOrEmpty()) {
-                filtereSpeciesList.addAll(it)
+            if (!it.isNullOrEmpty()) {
+                speciesList = it
+                viewModel.loadListOfImages(it)
+                activityViewModel.refreshSpecies(false)
+            }else{
+                showFirestoreError()
             }
         }
         viewModel.imageList.observe(viewLifecycleOwner) {
-            if (imageList.isNullOrEmpty()) {
-                imageList?.addAll(it)
+            if(it.size==speciesList?.size && !refresh) {
+                imageList = it
+                (0 until speciesList?.size!!).forEach { i ->
+                    if(!speciesListWithImages.contains(PlantWithImageBO(
+                            speciesList!![i].commonName,
+                            speciesList!![i].scientificName,
+                            speciesList!![i].family,
+                            imageList!![i]
+                        ))) {
+                        speciesListWithImages?.add(
+                            PlantWithImageBO(
+                                speciesList!![i].commonName,
+                                speciesList!![i].scientificName,
+                                speciesList!![i].family,
+                                imageList!![i]
+                            )
+                        )
+                    }
+                }
+                if (filtereSpeciesList.isNullOrEmpty()) {
+                    speciesListWithImages?.let { it1 -> filtereSpeciesList.addAll(it1) }
+                }
+                buildList()
+            }else if(it.size==speciesList?.size){
+                binding.progressBar.visibility=View.VISIBLE
             }
-            buildList()
         }
-        activityViewModel.refreshSpecies.observe(viewLifecycleOwner){
-                refresh=it
-        }
-
     }
 
 
     private fun buildList() {
-        if(refresh) {
-            binding.plantList.adapter =
-                filtereSpeciesList?.let {
-                    imageList?.let { it1 ->
-                        PlantAdapter(it, it1) { itemSelected ->
-                            onItemSelected(itemSelected)
-                        }
-                    }
-                }
-        }
-        binding.progressBar.visibility=View.GONE
-        refresh=false
+        filtereSpeciesList
+        adapter?.submitList(filtereSpeciesList)
+        binding.progressBar.visibility = View.GONE
+        activityViewModel.refreshSpecies(false)
     }
 
     companion object {
@@ -158,10 +163,43 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
             }
     }
 
-    fun onItemSelected(plant: PlantBO) {
+    fun onItemSelected(plant: PlantWithImageBO) {
+        bindingDetailsDialog =
+            SpecieDetailsLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+        addDetailsToBinding(plant)
+        val title = TextView(requireContext())
+        title.text = "PLANT DETAILS"
+        title.setBackgroundColor(Color.DKGRAY)
+        title.setPadding(10, 10, 10, 10)
+        title.gravity = Gravity.CENTER
+        title.setTextColor(Color.WHITE)
+        title.textSize = 20f
+        MaterialAlertDialogBuilder(requireContext())
+            .setCustomTitle(title).setView(bindingDetailsDialog!!.root)
+            .setNeutralButton(resources.getString(R.string.cancel)) { dialog, which ->
 
+            }.show()
     }
 
+
+    private fun addDetailsToBinding(plant: PlantWithImageBO) {
+        bindingDetailsDialog?.let {
+            Glide.with(requireContext())
+                .load(plant.image)
+                .into(it.imgSpecieDetail)
+        }
+        var commonName: String = plant.commonName
+        var family: String = plant.family
+        if (plant.commonName == "null") {
+            commonName = "Unknow"
+        }
+        if (plant.family == "null") {
+            family = "Unknow"
+        }
+        bindingDetailsDialog?.specieCommonName?.text = commonName
+        bindingDetailsDialog?.specieScientificName?.text = plant.scientificName
+        bindingDetailsDialog?.Family?.text = family
+    }
 
     override fun onClick(p0: View?) {
         bindingDialog = FilterLayoutBinding.inflate(LayoutInflater.from(requireContext()))
@@ -175,30 +213,29 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
         MaterialAlertDialogBuilder(requireContext())
             .setCustomTitle(title).setView(bindingDialog!!.root)
             .setNeutralButton(resources.getString(R.string.cancel)) { dialog, which ->
-                bindingDialog!!.chbSName.isActivated = true
-                bindingDialog!!.chbCName.isActivated = true
-                bindingDialog!!.chbFamily.isActivated = false
+                bindingDialog!!.chbSName.isChecked=true
+                bindingDialog!!.chbCName.isChecked=true
+                bindingDialog!!.chbFamily.isChecked=false
             }
             .setPositiveButton(resources.getString(R.string.acceptFilters)) { dialog, which ->
                 if (bindingDialog!!.rdbAToZ.isChecked) {
-                    filtereSpeciesList = LinkedList(filtereSpeciesList.sortedBy { it.commonName }
-                        .sortedBy { it.scientificName })
+                    filtereSpeciesList.clear()
+                    filtereSpeciesList.addAll(speciesListWithImages.sortedBy { it.scientificName }
+                        .sortedBy { it.commonName })
+                    binding.plantList.adapter?.notifyDataSetChanged()
                 } else if (bindingDialog!!.rdbZToA.isChecked) {
-                    filtereSpeciesList =
-                        LinkedList(filtereSpeciesList.sortedByDescending { it.commonName }
-                            .sortedByDescending { it.scientificName })
+                    filtereSpeciesList.clear()
+                    filtereSpeciesList.addAll(speciesListWithImages.sortedByDescending { it.scientificName }
+                        .sortedByDescending { it.commonName })
+                    binding.plantList.adapter?.notifyDataSetChanged()
                 }
-                binding.plantList.adapter =
-                    imageList?.let {
-                        PlantAdapter(filtereSpeciesList, it) { itemSelected ->
-                            onItemSelected(itemSelected)
-                        }
-                    }
+
             }.show()
+
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
-        TODO("Not yet implemented")
+        return true
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
@@ -206,7 +243,7 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
             filtereSpeciesList.clear()
             val searchText = newText!!.lowercase()
             if (searchText.isNotEmpty()) {
-                speciesList?.forEach {
+                speciesListWithImages?.forEach {
                     var alreadyAdded = false
                     if (bindingDialog == null) {
                         if (it.scientificName.lowercase()
@@ -216,6 +253,10 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
                             filtereSpeciesList.add(it)
                         }
                     } else {
+                        if(!bindingDialog!!.chbCName.isChecked && !bindingDialog!!.chbSName.isChecked && !bindingDialog!!.chbFamily.isChecked){
+                            bindingDialog!!.chbSName.isChecked=true
+                            bindingDialog!!.chbCName.isChecked=true
+                        }
                         if (bindingDialog!!.chbCName.isChecked && !alreadyAdded) {
                             if (it.commonName.lowercase().contains(searchText)) {
                                 filtereSpeciesList.add(it)
@@ -237,9 +278,9 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
                     }
                 }
             } else {
-                speciesList?.let { filtereSpeciesList?.addAll(it) }
+                speciesListWithImages?.let { filtereSpeciesList?.addAll(it) }
             }
-            binding.plantList.adapter?.notifyDataSetChanged()
+            adapter.notifyDataSetChanged()
         }
         return false
     }

@@ -1,23 +1,17 @@
 package com.example.juanjomz.amazonia.ui.view.Fragments
 
 import android.app.Activity.RESULT_OK
-import android.content.ContentValues.TAG
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.ViewCompat
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.coroutineScope
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.example.juanjomz.amazonia.R
 import com.example.juanjomz.amazonia.databinding.FragmentLoginBinding
 import com.facebook.CallbackManager
@@ -26,13 +20,10 @@ import com.facebook.FacebookException
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -40,9 +31,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import kotlinx.coroutines.*
-import kotlinx.coroutines.tasks.await
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -58,6 +46,8 @@ class Login : Fragment(), View.OnClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private lateinit var binding: FragmentLoginBinding
+    private lateinit var auth: FirebaseAuth
     var callbackManager = CallbackManager.Factory.create()
     private val responseLauncher=registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ activityResult->
         callbackManager.onActivityResult(activityResult.describeContents(), activityResult.resultCode, activityResult.data)
@@ -73,7 +63,7 @@ class Login : Fragment(), View.OnClickListener {
                             Toast.makeText(requireContext(), "Successfully logged in", Toast.LENGTH_SHORT).show()
                             Navigation.findNavController(binding.root).navigate(R.id.galleryFragment)
                         } else {
-                            Toast.makeText(requireContext(), "Mal", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "wrong credentials invalid username or password", Toast.LENGTH_SHORT).show()
                         }
 
                     })
@@ -83,8 +73,6 @@ class Login : Fragment(), View.OnClickListener {
         }
         }
     }
-    private lateinit var binding: FragmentLoginBinding
-    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -106,6 +94,7 @@ class Login : Fragment(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
+        parentFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         activity?.findViewById<BottomNavigationView>(R.id.navigationMenu)?.visibility=View.INVISIBLE
     }
 
@@ -115,7 +104,6 @@ class Login : Fragment(), View.OnClickListener {
         binding.regBtn.setOnClickListener(this)
         binding.googleButton.setOnClickListener(this)
         binding.facebookButton.setOnClickListener(this)
-        binding.instagramButton.setOnClickListener(this)
     }
 
     companion object {
@@ -145,14 +133,11 @@ class Login : Fragment(), View.OnClickListener {
                 binding.regBtn.id -> register()
                 binding.googleButton.id->sigInWithGoogle()
                 binding.facebookButton.id->sigInWithFacebook()
-                binding.instagramButton.id->sigInWithInstagram()
             }
         }
     }
 
-    private fun sigInWithInstagram() {
-        TODO("Not yet implemented")
-    }
+
 
     private fun sigInWithFacebook() {
         LoginManager.getInstance().logInWithReadPermissions(this, listOf("email"))
@@ -166,21 +151,13 @@ class Login : Fragment(), View.OnClickListener {
                             Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_SHORT).show()
                             Navigation.findNavController(binding.root).navigate(R.id.galleryFragment)
                         } else {
-                            Toast.makeText(requireContext(),"Mal",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(),"wrong credentials invalid username or password",Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
             }
-
-            override fun onCancel() {
-                TODO("Not yet implemented")
-            }
-
-            override fun onError(error: FacebookException?) {
-
-            }
-
-
+            override fun onCancel() {}
+            override fun onError(error: FacebookException?) {}
         })
     }
 
@@ -202,7 +179,7 @@ class Login : Fragment(), View.OnClickListener {
                         Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_SHORT).show()
                         Navigation.findNavController(binding.root).navigate(R.id.galleryFragment)
                     }else{
-                        Toast.makeText(requireContext(),"Mal",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(),"wrong credentials invalid username or password",Toast.LENGTH_SHORT).show()
                     }
 
                 })
@@ -219,10 +196,10 @@ class Login : Fragment(), View.OnClickListener {
         if (binding.edPassword.text.toString().isNullOrEmpty()) {
             binding.edPassword.error = getString(R.string.emptyField)
             areValids = false
-        } else if (binding.edPassword.text.toString().trim()
-                .matches(Regex.fromLiteral("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+\$).{8,}"))
+        } else if (!binding.edPassword.text.toString().trim()
+                .matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+\$).{8,}".toRegex())//debido a problemas con las cadenas no he podido hacer la cadena regex un recurso ya que si no, no funcionaba ya que convertía varios caracteres en caracteres especiales
         ) {
-            binding.edPassword.error = getString(R.string.passwordFormat)
+            binding.edPassword.error = getString(R.string.passwordFormatError)
             areValids = false
         }
         return areValids
@@ -238,7 +215,7 @@ class Login : Fragment(), View.OnClickListener {
                     Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_SHORT).show()
                     Navigation.findNavController(binding.root).navigate(R.id.galleryFragment)
                 }else{
-                    Toast.makeText(requireContext(),"Mal",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(),"wrong credentials invalid username or password",Toast.LENGTH_SHORT).show()
                 }
 
             })

@@ -28,6 +28,7 @@ import java.util.*
 import androidx.core.app.ActivityCompat
 
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.provider.DocumentsContract
 import android.util.Log
@@ -35,16 +36,15 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import android.graphics.drawable.BitmapDrawable
+import android.view.Gravity
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.*
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.example.juanjomz.amazonia.R
+import com.example.juanjomz.amazonia.databinding.BigImagesLayoutBinding
 import com.example.juanjomz.amazonia.databinding.PlantIdentificatedDialogBinding
 import com.example.juanjomz.amazonia.domain.PlantBO
 import com.example.juanjomz.amazonia.ui.viewmodel.ActivityVM
-import com.example.juanjomz.amazonia.ui.viewmodel.GalleryVM
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -66,8 +66,10 @@ class PlantIdentification : Fragment(), View.OnClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private var showdialog=true
+    private var requestBody:MultipartBody?=null
+    private var dialogVisibility=true
     private var specieList: List<PlantBO>? = null
+    private var bindingBigImageDialog: BigImagesLayoutBinding? = null
     private var imagesList: List<String>? = null
     private val activityViewModel : ActivityVM by activityViewModels()
     private var bindingDialog: PlantIdentificatedDialogBinding? = null
@@ -77,13 +79,15 @@ class PlantIdentification : Fragment(), View.OnClickListener {
     private lateinit var binding: FragmentPlantIdentificationBinding
     private val organs = listOf("flower", "leaf", "fruit")
     private val viewModel: PlantIdentificationVM by viewModels()
+
+    @RequiresApi(Build.VERSION_CODES.Q)
     private val responseLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
             if (activityResult.resultCode == Activity.RESULT_OK) {
                 binding.image.tag = "new_image"
                 val imageBitmap = activityResult.data?.extras?.get("data") as Bitmap
                 binding.image.setImageBitmap(imageBitmap)
-
+                addImage()
             }
         }
 
@@ -95,6 +99,7 @@ class PlantIdentification : Fragment(), View.OnClickListener {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -177,30 +182,42 @@ class PlantIdentification : Fragment(), View.OnClickListener {
         return realPath
     }
 
+    private fun showApiError(){
+        Toast.makeText(requireContext(),getString(R.string.showConnectionError),Toast.LENGTH_LONG).show()
+        binding.cdLoading.visibility=View.VISIBLE
+        binding.loadingLayout.visibility=View.VISIBLE
+    }
+
     private fun setupVMObservers() {
         viewModel.plant.observe(viewLifecycleOwner) {
             specieList = it
-            searchImage()
-
+            if(!it.isNullOrEmpty()) {
+                searchImage()
+            }else{
+                showApiError()
+            }
         }
         activityViewModel.showDialog.observe(viewLifecycleOwner){
-            showdialog=it
+            dialogVisibility=it
         }
         viewModel.image.observe(viewLifecycleOwner) {
             imagesList = it
-            binding.progressBar.visibility=View.GONE
-            if(showdialog) {
+            binding.cdLoading.visibility=View.GONE
+            binding.loadingLayout.visibility=View.GONE
+            if(dialogVisibility) {
                 showDialogPlantIdentificated()
             }
         }
         viewModel.specieAdded.observe(viewLifecycleOwner) {
-            activityViewModel.refreshSpecies(true)
-            showResultSpecieAdded(it)
+            if(dialogVisibility) {
+                showResultSpecieAdded(it)
+            }
         }
 
     }
 
     private fun showResultSpecieAdded(result: Boolean) {
+        dialogVisibility=false
         if (result) {
             Toast.makeText(requireContext(), "Specie added correctly!!", Toast.LENGTH_SHORT).show()
         } else {
@@ -211,6 +228,7 @@ class PlantIdentification : Fragment(), View.OnClickListener {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun makePhoto() {
         responseLauncher.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
     }
@@ -235,88 +253,93 @@ class PlantIdentification : Fragment(), View.OnClickListener {
             }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onClick(p0: View?) {
         if (p0 != null) {
             when (p0.id) {
                 binding.btnDetect.id ->{ identifyPlant()
-                    activityViewModel.changeShowDialog(true)
-                    binding.progressBar.visibility=View.VISIBLE}
+                    activityViewModel.changeShowDialog(true)}
                 binding.btnRetry.id -> makePhoto()
                 bindingDialog?.btnNext?.id -> {
                     if (resultSelected < specieList?.size!!) {
                         resultSelected++
-                        showdialog=true
+                        dialogVisibility=true
                         searchImage()
                     }
                 }
                 bindingDialog?.btnPrevious?.id -> {
                     if (resultSelected > 0) {
                         resultSelected--
-                        showdialog=true
+                        dialogVisibility=true
                         searchImage()
                     }
                 }
                 bindingDialog?.imagePlantIdentificated1?.id->{
-
+                    showBigImageDialog((bindingDialog?.imagePlantIdentificated1?.drawable as BitmapDrawable).bitmap)
                 }
                 bindingDialog?.imagePlantIdentificated2?.id->{
-
+                    showBigImageDialog((bindingDialog?.imagePlantIdentificated2?.drawable as BitmapDrawable).bitmap)
                 }
                 bindingDialog?.imagePlantIdentificated3?.id->{
-
+                    showBigImageDialog((bindingDialog?.imagePlantIdentificated3?.drawable as BitmapDrawable).bitmap)
                 }
                 bindingDialog?.imagePlantIdentificated4?.id->{
-
+                    showBigImageDialog((bindingDialog?.imagePlantIdentificated4?.drawable as BitmapDrawable).bitmap)
                 }
             }
         }
     }
 
-    fun identifyPlant() {
-        if (binding.image.tag != "default_image") {
-            val outputStream: OutputStream
-            var imageUri: Uri? = null
-            try {
-                val resolver = context?.getContentResolver()
-                val values = contentValuesOf().apply {
-                    put(MediaStore.MediaColumns.DISPLAY_NAME,
-                        "Image_" + System.currentTimeMillis() + ".jpeg")
-                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                    put(MediaStore.MediaColumns.RELATIVE_PATH,
-                        Environment.DIRECTORY_PICTURES + File.separator + getString(R.string.folderPath))
-                }
-                imageUri = resolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-                if (resolver != null) {
-                    outputStream = Objects.requireNonNull(imageUri)?.let {
-                        resolver.openOutputStream(it)
-                    }!!
-                    (binding.image.drawable as BitmapDrawable).bitmap.compress(Bitmap.CompressFormat.JPEG,
-                        100,
-                        outputStream)
-                    Objects.requireNonNull(outputStream)
+    private fun identifyPlant() {
+        if (binding.image.tag != "default_image" && requestBody!=null) {
+            binding.cdLoading.visibility=View.VISIBLE
+            binding.loadingLayout.visibility=View.VISIBLE
+            viewModel.loadPlant(requestBody!!)
+        }else{
+            Toast.makeText(requireContext(),getString(R.string.notPhotoYet),Toast.LENGTH_SHORT)
+        }
+    }
 
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun addImage(){
+        val outputStream: OutputStream
+        var imageUri: Uri? = null
+        try {
+            val resolver = context?.contentResolver
+            val values = contentValuesOf().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME,
+                    "Image_" + System.currentTimeMillis() + ".jpeg")
+                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                put(MediaStore.MediaColumns.RELATIVE_PATH,
+                    Environment.DIRECTORY_PICTURES + File.separator + getString(R.string.folderName)+auth.currentUser?.email)
             }
-            if (imageUri != null) {
-                val file = File(getRealPathFromUri(requireContext(), imageUri))
-                file.mkdir()
-                val builder = MultipartBody.Builder()
-                builder.addFormDataPart("images",
-                    file.name,
-                    RequestBody.create(MediaType.parse(getRealPathFromUri(requireContext(),
-                        imageUri)), file))
-                builder.addFormDataPart("organs", binding.spnOrgan.selectedItem.toString())
-                builder.setType(MultipartBody.FORM)
-                var requestBody = builder.build()
-                viewModel.loadPlant(requestBody)
+            imageUri = resolver?.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+            if (resolver != null && imageUri!=null) {
+                outputStream = resolver.openOutputStream(Objects.requireNonNull(imageUri))!!
+                (binding.image.drawable as BitmapDrawable).bitmap.compress(Bitmap.CompressFormat.JPEG,
+                    100,
+                    outputStream)
+                Objects.requireNonNull(outputStream)
             }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        if (imageUri != null) {
+            val file = File(getRealPathFromUri(requireContext(), imageUri))
+            file.mkdir()
+            val builder = MultipartBody.Builder()
+            builder.addFormDataPart("images",
+                file.name,
+                RequestBody.create(MediaType.parse(getRealPathFromUri(requireContext(),
+                    imageUri)), file))
+            builder.addFormDataPart("organs", binding.spnOrgan.selectedItem.toString())
+            builder.setType(MultipartBody.FORM)
+            requestBody = builder.build()
             activityViewModel.refreshImages(true)
         }
     }
 
-    fun searchImage() {
+    private fun searchImage() {
         if (specieList?.get(resultSelected)?.commonName != "null") {
             specieList?.get(resultSelected)?.commonName?.let { viewModel.searchImage(it) }
         } else {
@@ -324,7 +347,7 @@ class PlantIdentification : Fragment(), View.OnClickListener {
         }
     }
 
-    fun showDialogPlantIdentificated() {
+    private fun showDialogPlantIdentificated() {
         bindingDialog=PlantIdentificatedDialogBinding.inflate(LayoutInflater.from(requireContext()))
         fillDialogView()
         activityViewModel.changeShowDialog(false)
@@ -335,8 +358,15 @@ class PlantIdentification : Fragment(), View.OnClickListener {
     }
 
     private fun createDialog(): androidx.appcompat.app.AlertDialog {
+        val title = TextView(requireContext())
+        title.text = "This plant could be:"
+        title.setBackgroundColor(Color.DKGRAY)
+        title.setPadding(10, 10, 10, 10)
+        title.gravity = Gravity.CENTER
+        title.setTextColor(Color.WHITE)
+        title.textSize = 20f
         return MaterialAlertDialogBuilder(requireContext())
-            .setTitle("This plant could be:").setView(bindingDialog?.root)
+            .setCustomTitle(title).setView(bindingDialog?.root)
             .setNeutralButton(resources.getString(R.string.cancel)) { dialog, which ->
                 dialog.dismiss()
             }
@@ -347,8 +377,23 @@ class PlantIdentification : Fragment(), View.OnClickListener {
                             it)
                     }
                 }
+                activityViewModel.refreshSpecies(true)
+                dialogVisibility=true
                 dialog.dismiss()
             }.show()
+    }
+    private fun showBigImageDialog(p0: Bitmap) {
+        val title = TextView(requireContext())
+        title.text = getString(R.string.image)
+        title.setBackgroundColor(Color.DKGRAY)
+        title.setPadding(10, 10, 10, 10)
+        title.gravity = Gravity.CENTER
+        title.setTextColor(Color.WHITE)
+        title.textSize = 20f
+        bindingBigImageDialog = BigImagesLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+        bindingBigImageDialog!!.imgvimage.setImageBitmap(p0)
+        MaterialAlertDialogBuilder(requireContext())
+            .setCustomTitle(title).setView(bindingBigImageDialog!!.root).show()
     }
 
     private fun fillDialogView() {

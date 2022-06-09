@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="44dp"
+        android:fontFamily="@font/averia_gruesa_libre"
         android:text="Prueba"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"

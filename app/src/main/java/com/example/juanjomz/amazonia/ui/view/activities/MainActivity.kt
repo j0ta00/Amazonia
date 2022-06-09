@@ -1,6 +1,8 @@
 package com.example.juanjomz.amazonia.ui.view.activities
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -24,13 +26,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view: View = binding!!.root
         setContentView(view)
+
+
+
         val navController=findNavController(R.id.nav_host_fragment)
         binding!!.navigationMenu.setupWithNavController(navController = navController)
         val appBarConfiguration= AppBarConfiguration(setOf(R.id.galleryFragment,
             R.id.plantListFragment,
-            R.id.plantIdentification))
+            R.id.plantIdentification,
+            R.id.userDetailsFragment))
         setupActionBarWithNavController(navController,appBarConfiguration)
-
     }
-
 }

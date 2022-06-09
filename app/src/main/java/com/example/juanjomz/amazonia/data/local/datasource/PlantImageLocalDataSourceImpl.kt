@@ -12,4 +12,6 @@ class PlantImageLocalDataSourceImpl : PlantImageLocalDataSource {
     @RequiresApi(Build.VERSION_CODES.O)
     override suspend fun getLocalPlantImage(path: String): List<Bitmap> = LocalStorageService().getLocalImage(path)
 
+    override suspend fun deleteImage(path: String,imagesIndex:List<Int>): Boolean = LocalStorageService().deleteLocalImage(path,imagesIndex)
+
 }

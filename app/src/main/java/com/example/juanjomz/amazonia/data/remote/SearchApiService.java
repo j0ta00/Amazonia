@@ -31,15 +31,17 @@ public class SearchApiService {
                 resultUrls.add(element.attr("src"));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            resultUrls=new LinkedList();
         }
         return resultUrls;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<String> getImages(List<PlantBO> species){
-        List<String> results=new LinkedList<String>();
-        species.forEach(specie->results.add(getImage(specie.getCommonName()==null?specie.getScientificName():specie.getCommonName()).get(1)));
+        List<String> results=new LinkedList();
+        species.forEach(specie->{
+            results.add(getImage(specie.getCommonName().equals("null")?specie.getScientificName():specie.getCommonName()).get(1));
+        });
         return results;
     }
 }

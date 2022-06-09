@@ -8,13 +8,19 @@
     <string name="emptyField">
         This field can not be empty
     </string>
-    <string name="passwordFormat">
-        The password must contains  at least eight characters, at least one number and both lower and uppercase letters
+    <string name="passwordFormatError">
+        The password must contains at least eight characters,at least one number and both lower and uppercase letters
+    </string>
+    <string name="passwordModifyError">
+        An error occurred during password updating, please check your internet connection
+    </string>
+    <string name="passwordModifySuccess">
+        Password modify correctly!!
     </string>
     <string name="required">*Required</string>
     <string name="appTittle">AMAZONIA</string>
     <string name="quote">Embedded in these walls of green</string>
-    <string name="folderPath">plantFolder</string>
+    <string name="folderName">plantFolder</string>
     <string name="signInWith">Sign In With:</string>
     <string name="facebook_app_id">527003928886027</string>
     <string name="fb_login_protocol_scheme">fb1234</string>
@@ -26,4 +32,22 @@
     <string name="accept">Add to species</string>
     <string name="whatOrganIs">what part of the plant is:</string>
     <string name="acceptFilters">Accept</string>
+    <string name="filePath">/storage/emulated/0/Pictures/plantFolder</string>
+    <string name="passwordAsteriks">*************</string>
+    <string name="aboutTheApp">This application is designed for nature lovers, in it you can store images of your plants, as well as identify the new species you find and add them to your list of species, enjoy this app You\'re in the Amazon
+    </string>
+    <string name="aboutTheAppTitle"> ABOUT THE APP</string>
+    <string name="aboutUs">Follow me in social media</string>
+    <string name="image">IMAGE</string>
+    <string name="showConnectionError">Something was wrong check your internet connection</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="notPhotoYet">Press retry to take a photo</string>
 </resources>

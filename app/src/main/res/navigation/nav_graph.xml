@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_plantIdentification_to_galleryFragment"
             app:destination="@id/galleryFragment" />
+        <action
+            android:id="@+id/action_plantIdentification_to_userDetailsFragment"
+            app:destination="@id/userDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/galleryFragment"
@@ -37,6 +40,9 @@
         <action
             android:id="@+id/action_galleryFragment_to_plantListFragment"
             app:destination="@id/plantListFragment" />
+        <action
+            android:id="@+id/action_galleryFragment_to_userDetailsFragment"
+            app:destination="@id/userDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/plantListFragment"
@@ -48,6 +54,24 @@
             app:destination="@id/galleryFragment" />
         <action
             android:id="@+id/action_plantListFragment_to_plantIdentification"
+            app:destination="@id/plantIdentification" />
+        <action
+            android:id="@+id/action_plantListFragment_to_userDetailsFragment"
+            app:destination="@id/userDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userDetailsFragment"
+        android:name="com.example.juanjomz.amazonia.ui.view.Fragments.UserDetailsFragment"
+        android:label="fragment_user_details"
+        tools:layout="@layout/fragment_user_details" >
+        <action
+            android:id="@+id/action_userDetailsFragment_to_plantListFragment"
+            app:destination="@id/plantListFragment" />
+        <action
+            android:id="@+id/action_userDetailsFragment_to_galleryFragment"
+            app:destination="@id/galleryFragment" />
+        <action
+            android:id="@+id/action_userDetailsFragment_to_plantIdentification"
             app:destination="@id/plantIdentification" />
     </fragment>
 </navigation>

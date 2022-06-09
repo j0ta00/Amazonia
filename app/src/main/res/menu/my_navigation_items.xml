@@ -9,7 +9,7 @@
     <item android:id="@+id/plantIdentification"
         android:icon="@drawable/ic_baseline_photo_camera"
         android:title="DETECTOR" />
-    <item android:id="@+id/userProperties"
+    <item android:id="@+id/userDetailsFragment"
         android:icon="@drawable/ic_baseline_person_24"
-        android:title="USER" />
+        android:title="USER"/>
 </menu>

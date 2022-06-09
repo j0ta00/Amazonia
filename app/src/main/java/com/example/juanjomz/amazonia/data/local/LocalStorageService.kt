@@ -3,9 +3,11 @@ package com.example.juanjomz.amazonia.data.local
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
 import kotlin.io.path.pathString
@@ -23,5 +25,20 @@ class LocalStorageService {
             }
         }
         return imagesList
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun deleteLocalImage(path:String, imagesIndex:List<Int>):Boolean{
+        var counter=0
+        val listToDelete= mutableListOf<File>()
+        val imagesPath=Files.walk(Paths.get(path)).toArray()
+        imagesIndex.forEach{
+          if(File(imagesPath[it+1].toString()).exists()){
+              listToDelete.add(File(Files.walk(Paths.get(path)).toArray()[it+1].toString()))
+              counter++
+          }
+        }
+        listToDelete.forEach{it.delete()}
+        return counter==imagesIndex.size
     }
 }
