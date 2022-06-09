@@ -98,7 +98,7 @@
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:background="@drawable/white_background"
-        android:src="@drawable/ic_baseline_cancel_24"
+        android:src="@drawable/ic_baseline_edit"
         tools:layout_editor_absoluteX="255dp"
         tools:layout_editor_absoluteY="159dp"></ImageButton>
     </LinearLayout>
