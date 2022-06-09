@@ -299,7 +299,7 @@ class PlantIdentification : Fragment(), View.OnClickListener {
             binding.loadingLayout.visibility=View.VISIBLE
             viewModel.loadPlant(requestBody!!)
         }else{
-            Toast.makeText(requireContext(),getString(R.string.notPhotoYet),Toast.LENGTH_SHORT)
+            Toast.makeText(requireContext(),getString(R.string.notPhotoYet),Toast.LENGTH_SHORT).show()
         }
     }
 
