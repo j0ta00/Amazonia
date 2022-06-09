@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.example.juanjomz.amazonia.R
 import com.example.juanjomz.amazonia.databinding.FragmentLoginBinding
 import com.facebook.CallbackManager
@@ -96,6 +97,9 @@ class Login : Fragment(), View.OnClickListener {
         super.onResume()
         parentFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         activity?.findViewById<BottomNavigationView>(R.id.navigationMenu)?.visibility=View.INVISIBLE
+        if(!auth.currentUser?.email.isNullOrEmpty()){
+            Navigation.findNavController(binding.root).navigate(R.id.galleryFragment)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
