@@ -67,7 +67,7 @@ class PlantIdentification : Fragment(), View.OnClickListener {
     private var param1: String? = null
     private var param2: String? = null
     private var requestBody:MultipartBody?=null
-    private var dialogVisibility=true
+    private var dialogVisibility=false
     private var specieList: List<PlantBO>? = null
     private var bindingBigImageDialog: BigImagesLayoutBinding? = null
     private var imagesList: List<String>? = null
@@ -214,21 +214,19 @@ class PlantIdentification : Fragment(), View.OnClickListener {
                 showResultSpecieAdded(it)
             }
         }
-
     }
 
     private fun showResultSpecieAdded(result: Boolean) {
         dialogVisibility=false
+        binding.cdLoading.visibility=View.GONE
+        binding.loadingLayout.visibility=View.GONE
         if (result) {
             Toast.makeText(requireContext(), "Specie added correctly!!", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(requireContext(),
                 "Something went wrong, check your internet connection",
                 Toast.LENGTH_SHORT).show()
-            binding.cdLoading.visibility=View.GONE
-            binding.loadingLayout.visibility=View.GONE
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -380,8 +378,10 @@ class PlantIdentification : Fragment(), View.OnClickListener {
                             it)
                     }
                 }
-                activityViewModel.refreshSpecies(true)
                 dialogVisibility=true
+                binding.cdLoading.visibility=View.VISIBLE
+                binding.loadingLayout.visibility=View.VISIBLE
+                activityViewModel.refreshSpecies(true)
                 dialog.dismiss()
             }.show()
     }

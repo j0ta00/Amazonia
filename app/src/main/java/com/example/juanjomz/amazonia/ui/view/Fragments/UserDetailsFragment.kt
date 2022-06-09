@@ -169,9 +169,10 @@ class UserDetailsFragment : Fragment(), View.OnClickListener {
         when (p0?.id) {
             binding.imgbEdit.id -> editPassword()
             binding.btnSave.id -> saveNewPassword()
-            binding.logOutButton.id->{auth.signOut()
-                activity?.viewModelStore?.clear()
+            binding.logOutButton.id->{
                 activityViewModel.changeShowDialog(false)
+                auth.signOut()
+                activity?.viewModelStore?.clear()
                 findNavController().navigate(R.id.login)}
             else -> startActivity(Intent(Intent.ACTION_VIEW,Uri.parse("https://www.youtube.com/watch?v=B4CcX720DW4")))
         }
