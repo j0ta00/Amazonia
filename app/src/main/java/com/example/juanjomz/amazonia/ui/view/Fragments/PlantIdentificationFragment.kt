@@ -225,6 +225,8 @@ class PlantIdentification : Fragment(), View.OnClickListener {
             Toast.makeText(requireContext(),
                 "Something went wrong, check your internet connection",
                 Toast.LENGTH_SHORT).show()
+            binding.cdLoading.visibility=View.GONE
+            binding.loadingLayout.visibility=View.GONE
         }
 
     }

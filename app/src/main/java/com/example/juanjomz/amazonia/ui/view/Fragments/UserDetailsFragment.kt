@@ -171,6 +171,7 @@ class UserDetailsFragment : Fragment(), View.OnClickListener {
             binding.btnSave.id -> saveNewPassword()
             binding.logOutButton.id->{auth.signOut()
                 activity?.viewModelStore?.clear()
+                activityViewModel.changeShowDialog(false)
                 findNavController().navigate(R.id.login)}
             else -> startActivity(Intent(Intent.ACTION_VIEW,Uri.parse("https://www.youtube.com/watch?v=B4CcX720DW4")))
         }
