@@ -50,22 +50,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
-
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
- * A simple [Fragment] subclass.
- * Use the [PlantIdentification.newInstance] factory method to
- * create an instance of this fragment.
+ * Fragmento de identificación de plantas, se centra en ofrecer la funcionalidad de la detección de las especies y añadirlas llamando a los respectivos
+ * servicios, las funciones override o de listener no tendrán documentación ya que vienen comentadas en el padre
  */
 class PlantIdentification : Fragment(), View.OnClickListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
     private var requestBody:MultipartBody?=null
     private var dialogVisibility=false
     private var specieList: List<PlantBO>? = null
@@ -91,13 +80,6 @@ class PlantIdentification : Fragment(), View.OnClickListener {
             }
         }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreateView(
@@ -114,20 +96,22 @@ class PlantIdentification : Fragment(), View.OnClickListener {
         makePhoto()
         return binding.root
     }
-
+    /**
+     * Propósito: Comprueba si se ha dado el permiso de almacenamiento de imágenes
+     * */
     private fun checkExternalStoragePermission() {
         val permissionCheck = ContextCompat.checkSelfPermission(
             requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            Log.i("Mensaje", "No se tiene permiso para leer.")
+            Log.i(getString(R.string.message_storage),getString(R.string.permissions_not_granted))
             ActivityCompat.requestPermissions(
                 requireActivity(),
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
                 225
             )
         } else {
-            Log.i("Mensaje", "Se tiene permiso para leer!")
+            Log.i(getString(R.string.message_storage), getString(R.string.permissions_granted))
         }
     }
 
@@ -138,12 +122,16 @@ class PlantIdentification : Fragment(), View.OnClickListener {
         binding.btnRetry.setOnClickListener(this)
         activityViewModel.refreshImages(true)
         binding.image.setImageResource(R.drawable.takeaphoto)
-        binding.image.tag = "default_image"
+        binding.image.tag = getString(R.string.default_image)
         binding.spnOrgan.adapter =context?.let { ArrayAdapter(it, R.layout.spinner_item, organs) }
 
     }
 
-
+    /**
+     * Propósito: Comprueba si se ha dado el permiso de almacenamiento de imágenes
+     * @param context: Context, uri: Uri
+     * @return real path:String
+     * */
     private fun getRealPathFromUri(context: Context, uri: Uri): String {
         var realPath = String()
         uri.path?.let { path ->
@@ -182,7 +170,9 @@ class PlantIdentification : Fragment(), View.OnClickListener {
         }
         return realPath
     }
-
+    /**
+     * Propósito: Muestra el error de la api
+     * */
     private fun showApiError(){
         Toast.makeText(requireContext(),getString(R.string.showConnectionError),Toast.LENGTH_LONG).show()
         binding.cdLoading.visibility=View.VISIBLE
@@ -215,43 +205,28 @@ class PlantIdentification : Fragment(), View.OnClickListener {
             }
         }
     }
-
+    /**
+     * Propósito: Muestra si la especie ha sido añadida o no
+     * @param result: Boolean
+     * */
     private fun showResultSpecieAdded(result: Boolean) {
         dialogVisibility=false
         binding.cdLoading.visibility=View.GONE
         binding.loadingLayout.visibility=View.GONE
         if (result) {
-            Toast.makeText(requireContext(), "Specie added correctly!!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.specie_added), Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(requireContext(),
-                "Something went wrong, check your internet connection",
+                getString(R.string.showConnectionError),
                 Toast.LENGTH_SHORT).show()
         }
     }
-
+    /**
+     * Propósito: Llama al intent que abre la camra
+     * */
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun makePhoto() {
         responseLauncher.launch(Intent(MediaStore.ACTION_IMAGE_CAPTURE))
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PlantIdentification.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            PlantIdentification().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -290,9 +265,11 @@ class PlantIdentification : Fragment(), View.OnClickListener {
             }
         }
     }
-
+    /**
+     * Propósito: Llama al vm para que este llame a las funciones necesarias para la identificacion de la planta
+     * */
     private fun identifyPlant() {
-        if (binding.image.tag != "default_image" && requestBody!=null) {
+        if (binding.image.tag != getString(R.string.default_image) && requestBody!=null) {
             binding.cdLoading.visibility=View.VISIBLE
             binding.loadingLayout.visibility=View.VISIBLE
             viewModel.loadPlant(requestBody!!)
@@ -300,7 +277,9 @@ class PlantIdentification : Fragment(), View.OnClickListener {
             Toast.makeText(requireContext(),getString(R.string.notPhotoYet),Toast.LENGTH_SHORT).show()
         }
     }
-
+    /**
+     * Propósito: Llama al vm para que este llame a las funciones necesarias para que se añada una especie a la lista de especies
+     * */
     @RequiresApi(Build.VERSION_CODES.Q)
     fun addImage(){
         val outputStream: OutputStream
@@ -339,15 +318,19 @@ class PlantIdentification : Fragment(), View.OnClickListener {
             activityViewModel.refreshImages(true)
         }
     }
-
+    /**
+     * Propósito: Llama al viewmodel para obtener las imagenes de las especies
+     * */
     private fun searchImage() {
-        if (specieList?.get(resultSelected)?.commonName != "null") {
+        if (specieList?.get(resultSelected)?.commonName != getString(R.string.null_value)) {
             specieList?.get(resultSelected)?.commonName?.let { viewModel.searchImage(it) }
         } else {
             specieList!![resultSelected].scientificName.let { viewModel.searchImage(it) }
         }
     }
-
+    /**
+     * Propósito: Llama al vm para que este llame a las funciones necesarias para que se añada una especie a la lista de especies
+     * */
     private fun showDialogPlantIdentificated() {
         bindingDialog=PlantIdentificatedDialogBinding.inflate(LayoutInflater.from(requireContext()))
         fillDialogView()
@@ -357,7 +340,10 @@ class PlantIdentification : Fragment(), View.OnClickListener {
         }
         dialog = createDialog()
     }
-
+    /**
+     * Propósito: Devuelve el dialog con el resultado de la detección
+     * @return  androidx.appcompat.app.AlertDialog
+     * */
     private fun createDialog(): androidx.appcompat.app.AlertDialog {
         val title = TextView(requireContext())
         title.text = "This plant could be:"
@@ -385,7 +371,12 @@ class PlantIdentification : Fragment(), View.OnClickListener {
                 dialog.dismiss()
             }.show()
     }
-    private fun showBigImageDialog(p0: Bitmap) {
+
+    /**
+     * Propósito: Devuelve el dialog con la imagen ampliada
+     * @return  androidx.appcompat.app.AlertDialog
+     * */
+    private fun showBigImageDialog(image: Bitmap) {
         val title = TextView(requireContext())
         title.text = getString(R.string.image)
         title.setBackgroundColor(Color.DKGRAY)
@@ -394,13 +385,15 @@ class PlantIdentification : Fragment(), View.OnClickListener {
         title.setTextColor(Color.WHITE)
         title.textSize = 20f
         bindingBigImageDialog = BigImagesLayoutBinding.inflate(LayoutInflater.from(requireContext()))
-        bindingBigImageDialog!!.imgvimage.setImageBitmap(p0)
+        bindingBigImageDialog!!.imgvimage.setImageBitmap(image)
         MaterialAlertDialogBuilder(requireContext())
             .setCustomTitle(title).setView(bindingBigImageDialog!!.root).show()
     }
-
+    /**
+     * Propósito: Rellena la lista del dialog
+     * */
     private fun fillDialogView() {
-        if (specieList?.get(resultSelected)?.commonName == "null") {
+        if (specieList?.get(resultSelected)?.commonName == getString(R.string.null_value)) {
             bindingDialog?.txtPlantIdentificated?.text =
                 specieList?.get(resultSelected)?.scientificName
         } else {

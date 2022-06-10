@@ -35,32 +35,15 @@ import com.example.juanjomz.amazonia.ui.viewmodel.ActivityVM
 import com.example.juanjomz.amazonia.ui.viewmodel.GalleryVM
 import com.example.juanjomz.amazonia.ui.viewmodel.PlantListVM
 
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
- * A simple [Fragment] subclass.
- * Use the [UserDetailsFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * Fragmento detalles del usuario, se centra en las funcionalidades relacionadas con la sesión del usuario, las funciones override o de listener no tendrán documentación ya que vienen comentadas en el padre
  */
+
 class UserDetailsFragment : Fragment(), View.OnClickListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
     private lateinit var binding: FragmentUserDetailsBinding
     private lateinit var auth: FirebaseAuth
     private val activityViewModel : ActivityVM by activityViewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -84,27 +67,9 @@ class UserDetailsFragment : Fragment(), View.OnClickListener {
         binding.btnSave.setOnClickListener(this)
         binding.imgbEdit.setOnClickListener(this)
     }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment UserDetailsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            UserDetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
-
+    /**
+     * Propósito: Permite editar la contraseña del usuario
+     * */
     private fun editPassword() {
         if (binding.txtUserPassword.visibility == View.VISIBLE) {
             editMode()
@@ -112,6 +77,9 @@ class UserDetailsFragment : Fragment(), View.OnClickListener {
             returnToNormalMode()
         }
     }
+    /**
+     * Propósito: Vuelve la vista al modo normal
+     * */
     private fun returnToNormalMode(){
         binding.txtUserPassword.visibility = View.VISIBLE
         binding.edUserPassword.visibility = View.GONE
@@ -125,6 +93,9 @@ class UserDetailsFragment : Fragment(), View.OnClickListener {
             )
         )
     }
+    /**
+     * Propósito: Convierte la vista al modo de edición, permitiendo cambiar la contraseña
+     * */
     private fun editMode(){
         binding.txtUserPassword.visibility = View.GONE
         binding.edUserPassword.visibility = View.VISIBLE
@@ -138,7 +109,9 @@ class UserDetailsFragment : Fragment(), View.OnClickListener {
         )
     }
 
-
+    /**
+     * Propósito: Guarda la nueva contraseña introducida
+     * */
     private fun saveNewPassword() {
         if (binding.edUserPassword.text.isNotEmpty() && binding.edUserPassword.text.trim()
                 .matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+\$).{8,}".toRegex())//debido a problemas con las cadenas no he podido hacer la cadena regex un recurso ya que si no, no funcionaba ya que convertía varios caracteres en caracteres especiales

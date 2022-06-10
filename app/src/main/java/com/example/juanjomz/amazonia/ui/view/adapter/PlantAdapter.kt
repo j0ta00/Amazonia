@@ -11,7 +11,11 @@ import com.example.juanjomz.amazonia.R
 import com.example.juanjomz.amazonia.databinding.ItemPlantBinding
 import com.example.juanjomz.amazonia.domain.PlantBO
 import com.example.juanjomz.amazonia.domain.PlantWithImageBO
-
+/**
+ * Adaptador para el recyclerview de las especies
+ * la mayoría de métodos son override por lo que no tiene mucho sentido documentarlos ya que vienen documentados
+ * en la clase padre.
+ * */
 class PlantAdapter(private val plantList: MutableList<PlantWithImageBO>, private val onClickListener:(PlantWithImageBO)->Unit) : ListAdapter<PlantWithImageBO,PlantAdapter.PlantViewHolder>(DiffUtilCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlantViewHolder {

@@ -25,23 +25,11 @@ import com.bumptech.glide.Glide
 import com.example.juanjomz.amazonia.databinding.SpecieDetailsLayoutBinding
 import com.example.juanjomz.amazonia.domain.PlantWithImageBO
 import com.example.juanjomz.amazonia.ui.viewmodel.ActivityVM
-
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
- * A simple [Fragment] subclass.
- * Use the [PlantListFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * Fragmento listado de plantas, se centra en mostrar el listado de plantas y poder buscar y filtrar sobre este, las funciones override o de listener no tendrán documentación ya que vienen comentadas en el padre
  */
 class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTextListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
     private var refresh: Boolean = true
-    private var param2: String? = null
     private var speciesListWithImages: MutableList<PlantWithImageBO> = mutableListOf()
     private var speciesList: List<PlantBO>? = null
     private val adapter by lazy {
@@ -55,13 +43,6 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
     private val viewModel: PlantListVM by viewModels()
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: FragmentPlantListBinding
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -85,13 +66,22 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
         binding.searchview.setOnQueryTextListener(this)
     }
 
-
+    /**
+     * Propósito: Muestra un error cuando el firestore no está disponible
+     * */
     private fun showFirestoreError() {
         Toast.makeText(requireContext(), getString(R.string.showConnectionError), Toast.LENGTH_LONG)
             .show()
         binding.cdLoading.visibility = View.GONE
     }
-
+    /**
+     * Propósito: Muestra un mensaje pidiendo que añadas alguna especie
+     * */
+    private fun showAddSomeSpecies() {
+        Toast.makeText(requireContext(), getString(R.string.addSomeSpecies), Toast.LENGTH_LONG)
+            .show()
+        binding.cdLoading.visibility = View.GONE
+    }
     private fun setupVMObservers() {
         activityViewModel.refreshSpecies.observe(viewLifecycleOwner){
             refresh=it
@@ -102,6 +92,8 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
                 speciesList = it
                 viewModel.loadListOfImages(it)
                 activityViewModel.refreshSpecies(false)
+            }else if(it.isEmpty()){
+                showAddSomeSpecies()
             }else{
                 showFirestoreError()
             }
@@ -136,7 +128,9 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
         }
     }
 
-
+    /**
+     * Propósito: Construye la lista y la sube al adaptador
+     * */
     private fun buildList() {
         filtereSpeciesList
         adapter?.submitList(filtereSpeciesList)
@@ -144,27 +138,7 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
         activityViewModel.refreshSpecies(false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PlantListFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            PlantListFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
-
-    fun onItemSelected(plant: PlantWithImageBO) {
+    private fun onItemSelected(plant: PlantWithImageBO) {
         bindingDetailsDialog =
             SpecieDetailsLayoutBinding.inflate(LayoutInflater.from(requireContext()))
         addDetailsToBinding(plant)
@@ -182,7 +156,10 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
             }.show()
     }
 
-
+    /**
+     * Propósito: Añade detalles al binding del dialog
+     * @param plant: PlantWithImageBO
+     * */
     private fun addDetailsToBinding(plant: PlantWithImageBO) {
         bindingDetailsDialog?.let {
             Glide.with(requireContext())
@@ -191,18 +168,18 @@ class PlantListFragment : Fragment(), View.OnClickListener, SearchView.OnQueryTe
         }
         var commonName: String = plant.commonName
         var family: String = plant.family
-        if (plant.commonName == "null") {
-            commonName = "Unknow"
+        if (plant.commonName == getString(R.string.null_value)) {
+            commonName = getString(R.string.unknow_value)
         }
-        if (plant.family == "null") {
-            family = "Unknow"
+        if (plant.family == getString(R.string.null_value)) {
+            family = getString(R.string.unknow_value)
         }
         bindingDetailsDialog?.specieCommonName?.text = commonName
         bindingDetailsDialog?.specieScientificName?.text = plant.scientificName
         bindingDetailsDialog?.Family?.text = family
     }
 
-    override fun onClick(p0: View?) {
+    override fun onClick(view: View?) {
         bindingDialog = FilterLayoutBinding.inflate(LayoutInflater.from(requireContext()))
         val title = TextView(requireContext())
         title.text = "FILTERS"

@@ -17,9 +17,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
+/**
+ * Servicio para obtener las imagenes buscando por el nombre de la planta, usa jsoup entre otras librerías
+ *@author jjmza
+ *
+ * */
 public class SearchApiService {
-
+    /**
+     * Propósito: obtiene la planta del servicio api de detección
+     * @return List<PlantBO> listado plantas
+     * @param  plantName:String el body que requiere la api
+     * */
     public static List<String> getImage(String plantName) {
         String userAgent = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36";
         String url = "https://www.google.com/search?site=imghp&tbm=isch&source=hp&q="+plantName+" plant&gws_rd=cr";
@@ -35,7 +43,11 @@ public class SearchApiService {
         }
         return resultUrls;
     }
-
+    /**
+     * Propósito: obtiene una lista de imagenes en funcion de una lista de especies
+     * @return List<String> listado url imágenes
+     * @param  species:List<PlantBO> species
+     * */
     @RequiresApi(api = Build.VERSION_CODES.N)
     public static List<String> getImages(List<PlantBO> species){
         List<String> results=new LinkedList();

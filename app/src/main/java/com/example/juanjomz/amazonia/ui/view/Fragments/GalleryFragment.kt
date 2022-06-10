@@ -17,8 +17,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.view.drawToBitmap
-import androidx.core.view.get
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.juanjomz.amazonia.R
@@ -33,27 +31,14 @@ import com.example.juanjomz.amazonia.ui.viewmodel.ActivityVM
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlin.collections.ArrayList
 import android.graphics.drawable.BitmapDrawable
-import androidx.fragment.app.FragmentManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
-
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
- * A simple [Fragment] subclass.
- * Use the [GalleryFragment.newInstance] factory method to
- * create an instance of this fragment.
+ * Fragmento galería el cual mostrará las imagenes realizadas con la app, las funciones override o de listener no tendrán documentación ya que vienen comentadas en el padre
  */
 class GalleryFragment : Fragment(), View.OnClickListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
     private lateinit var auth: FirebaseAuth
     private val itemsSelecteds=mutableListOf<Bitmap>()
     private val adapter by lazy{ImageAdapter(itemsSelecteds,{showBigImageDialog(it)},
@@ -64,14 +49,6 @@ class GalleryFragment : Fragment(), View.OnClickListener {
     private val viewModel: GalleryVM by viewModels()
     private lateinit var binding: FragmentGalleryBinding
     private val activityViewModel: ActivityVM by activityViewModels()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -112,8 +89,8 @@ class GalleryFragment : Fragment(), View.OnClickListener {
         }
         viewModel.imagesDeleted.observe(viewLifecycleOwner) {
             imagesDeleted(it)
-            var newList= mutableListOf<Bitmap>()
-            var newList2= mutableListOf<Bitmap>()
+            val newList= mutableListOf<Bitmap>()
+            val newList2= mutableListOf<Bitmap>()
             newList.addAll(adapter.currentList)
             imageIndexToDelete.forEach { imagesIndex ->
                 newList2.add(newList[imagesIndex])
@@ -133,53 +110,42 @@ class GalleryFragment : Fragment(), View.OnClickListener {
         }
 
     }
-
+    /**
+     * Propósito: muestra el resultado de las imagenes borradas
+     * @param result: Boolean
+     * */
     private fun imagesDeleted(result: Boolean) {
         if (result) {
-            Toast.makeText(requireContext(), "Images Deleted", Toast.LENGTH_SHORT)
+            Toast.makeText(requireContext(), getString(R.string.imageDeleteCorrectly), Toast.LENGTH_SHORT)
         } else {
             Toast.makeText(requireContext(),
-                "Something happens, deleted is wrong",
+                getString(R.string.imageDeleteError),
                 Toast.LENGTH_SHORT)
         }
         activityViewModel.refreshImages(true)
     }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment GalleryFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            GalleryFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
-
-    fun showBigImageDialog(p0: Bitmap) {
+    /**
+     * Propósito: muestra el dialog de la imagen ampliada
+     * @param image: Bitmap
+     * */
+    private fun showBigImageDialog(image: Bitmap) {
         val title = TextView(requireContext())
-        title.text = "IMAGE"
+        title.text = getString(R.string.image)
         title.setBackgroundColor(Color.DKGRAY)
         title.setPadding(10, 10, 10, 10)
         title.gravity = Gravity.CENTER
         title.setTextColor(Color.WHITE)
         title.textSize = 20f
         bindingDialog = BigImagesLayoutBinding.inflate(LayoutInflater.from(requireContext()))
-        bindingDialog!!.imgvimage.setImageBitmap(p0)
+        bindingDialog!!.imgvimage.setImageBitmap(image)
         MaterialAlertDialogBuilder(requireContext())
             .setCustomTitle(title).setView(bindingDialog!!.root).show()
     }
-
-    fun onItemPressed(image: ImageView, index: Int) {
+    /**
+     * Propósito: marca las imagenes y llama a las funciones que hacen la lógica del borrado
+     * @param image: Bitmap
+     * */
+    private fun onItemPressed(image: ImageView, index: Int) {
         if (!imageIndexToDelete.contains(index)) {
             binding.imgbDeleteImages.visibility = View.VISIBLE
             binding.txtImagesToDeleteCount.visibility = View.VISIBLE
@@ -199,7 +165,10 @@ class GalleryFragment : Fragment(), View.OnClickListener {
             }
         }
     }
-
+    /**
+     * Clase para que el recyclerview se adecue a cada pantalla de forma programática
+     *
+     * */
     inner class GridSpacingItemDecoration(
         private val spanCount: Int,
         private val spacing: Int,
@@ -211,7 +180,7 @@ class GalleryFragment : Fragment(), View.OnClickListener {
             parent: RecyclerView,
             state: RecyclerView.State,
         ) {
-            super.getItemOffsets(outRect, view, parent, state);
+            super.getItemOffsets(outRect, view, parent, state)
             val itemWidth = parent.width / 3
             view.layoutParams.width = itemWidth
         }

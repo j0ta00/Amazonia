@@ -13,7 +13,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.juanjomz.amazonia.R
 import com.example.juanjomz.amazonia.databinding.GalleryBinding
-
+/**
+ * Adaptador para el recyclerview de la galería
+ * la mayoría de métodos son override por lo que no tiene mucho sentido documentarlos ya que vienen documentados
+ * en la clase padre.
+ * */
 class ImageAdapter(private val itemsSelected:List<Bitmap>,private val onClickListener:(Bitmap)->Unit, private val onLongClickListener: (ImageView,Int) -> Unit) : ListAdapter<Bitmap,ImageAdapter.ImageViewHolder>(DiffUtilCallback) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {

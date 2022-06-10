@@ -33,20 +33,10 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
 import kotlinx.coroutines.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 /**
- * A simple [Fragment] subclass.
- * Use the [Login.newInstance] factory method to
- * create an instance of this fragment.
+ * Fragmento de login el cual el cual realiza las funcionalidades de login y registro, las funciones override o de listener no tendrán documentación ya que vienen comentadas en el padre
  */
 class Login : Fragment(), View.OnClickListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
     private lateinit var binding: FragmentLoginBinding
     private lateinit var auth: FirebaseAuth
     var callbackManager = CallbackManager.Factory.create()
@@ -61,26 +51,20 @@ class Login : Fragment(), View.OnClickListener {
                 Firebase.auth.signInWithCredential(credential)
                     .addOnCompleteListener(requireActivity(), OnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            Toast.makeText(requireContext(), "Successfully logged in", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), getString(R.string.logged_in), Toast.LENGTH_SHORT).show()
                             Navigation.findNavController(binding.root).navigate(R.id.galleryFragment)
                         } else {
-                            Toast.makeText(requireContext(), "wrong credentials invalid username or password", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), getString(R.string.wrong_credentials), Toast.LENGTH_SHORT).show()
                         }
 
                     })
             }
         }catch(e: ApiException){
-                Toast.makeText(requireContext(), "Something went wrong during the authentication, please check your internet connection", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.showConnectionError), Toast.LENGTH_SHORT).show()
         }
         }
     }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -110,26 +94,6 @@ class Login : Fragment(), View.OnClickListener {
         binding.facebookButton.setOnClickListener(this)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Login.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Login().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
-
     override fun onClick(p0: View?) {
         if (p0 != null) {
             when (p0.id) {
@@ -142,7 +106,9 @@ class Login : Fragment(), View.OnClickListener {
     }
 
 
-
+    /**
+     * Propósito: permita loguearse con facebook
+     * */
     private fun sigInWithFacebook() {
         LoginManager.getInstance().logInWithReadPermissions(this, listOf("email"))
         LoginManager.getInstance().registerCallback(callbackManager,
@@ -152,10 +118,10 @@ class Login : Fragment(), View.OnClickListener {
                     val credential = FacebookAuthProvider.getCredential(it.accessToken.toString())
                     auth.signInWithCredential(credential).addOnCompleteListener {
                         if (it.isSuccessful) {
-                            Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(),getString(R.string.logged_in),Toast.LENGTH_SHORT).show()
                             Navigation.findNavController(binding.root).navigate(R.id.galleryFragment)
                         } else {
-                            Toast.makeText(requireContext(),"wrong credentials invalid username or password",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(),getString(R.string.wrong_credentials),Toast.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -164,14 +130,18 @@ class Login : Fragment(), View.OnClickListener {
             override fun onError(error: FacebookException?) {}
         })
     }
-
+    /**
+     * Propósito: permita loguearse con google
+     * */
     private fun sigInWithGoogle() {
         val googleConf=GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build()
         val googleClient= GoogleSignIn.getClient(requireActivity(),googleConf)
         responseLauncher.launch(googleClient.signInIntent)
         googleClient.signOut()
     }
-
+    /**
+     * Propósito: permita loguearse en firebase
+     * */
     private fun signIn() {
         lifecycleScope.launch {
             if (checkFields()) {
@@ -180,17 +150,20 @@ class Login : Fragment(), View.OnClickListener {
                     binding.edPassword.text.toString().trim()
                 ).addOnCompleteListener(requireActivity(), OnCompleteListener { task->
                     if(task.isSuccessful){
-                        Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(),getString(R.string.logged_in),Toast.LENGTH_SHORT).show()
                         Navigation.findNavController(binding.root).navigate(R.id.galleryFragment)
                     }else{
-                        Toast.makeText(requireContext(),"wrong credentials invalid username or password",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(),getString(R.string.wrong_credentials),Toast.LENGTH_SHORT).show()
                     }
 
                 })
             }
         }
     }
-
+    /**
+     * Propósito: permita loguearse con facebook
+     * @return arevalids:Boolean if fields are valids
+     * */
     private fun checkFields(): Boolean {
         var areValids = true
         if (binding.edEmail.text.toString().isNullOrEmpty()) {
@@ -208,7 +181,9 @@ class Login : Fragment(), View.OnClickListener {
         }
         return areValids
     }
-
+    /**
+     * Propósito: permite regidtrarse en firebase
+     * */
     private fun register() {
         if (checkFields()) {
             auth.createUserWithEmailAndPassword(
@@ -216,10 +191,10 @@ class Login : Fragment(), View.OnClickListener {
                 binding.edPassword.text.toString().trim()
             ).addOnCompleteListener(requireActivity(), OnCompleteListener { task->
                 if(task.isSuccessful){
-                    Toast.makeText(requireContext(),"Successfully logged in",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(),getString(R.string.logged_in),Toast.LENGTH_SHORT).show()
                     Navigation.findNavController(binding.root).navigate(R.id.galleryFragment)
                 }else{
-                    Toast.makeText(requireContext(),"wrong credentials invalid username or password",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(),getString(R.string.wrong_credentials),Toast.LENGTH_SHORT).show()
                 }
 
             })

@@ -14,7 +14,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class PlantRemoteDataSourceImpl : PlantRemoteDataSource {
     private val plantApiService: PlantApiService = PlantApiService.getAPIService()
-
+    /**
+     * Propósito: obtiene la planta del servicio api de detección
+     * @return List<PlantBO> listado plantas
+     * @param requestbody:RequestBody el body que requiere la api
+     * */
     override suspend fun getRemotePlant(requestbody: RequestBody): List<PlantBO> {
         val apiResult = plantApiService.getPlant(requestbody)
         val listResult = mutableListOf<PlantBO>()
@@ -26,8 +30,17 @@ class PlantRemoteDataSourceImpl : PlantRemoteDataSource {
         }
         return listResult
     }
-
+    /**
+     * Propósito: obtiene las plantas almacenadas en firestore
+     * @return List<PlantBO> listado plantas que tiene almacenados el usuario
+     * @param email: String email del usuario
+     * */
     override suspend fun getRemotePlants(email: String): List<PlantBO> = FirestoreService().getPlants(email)
+    /**
+     * Propósito: añade una nueva especie a firebase llamando al servicio
+     * @return List<PlantBO> listado plantas que tiene almacenados el usuario
+     * @param email:String, plant:PlantBO email del usuario, planta a añadir
+     * */
     override suspend fun addRemotePlants(email:String, plant:PlantBO):Boolean=FirestoreService().addSpecie(email,plant)
     private fun getResult(result: Any): PlantBO {
             val result =

@@ -16,7 +16,10 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.juanjomz.amazonia.R
 import com.example.juanjomz.amazonia.databinding.ActivityMainBinding
-
+/**
+ *
+ *Actividad principal, actividad que posee el contenedor de fragmentos y que inicia toda la aplicación
+ * */
 class MainActivity : AppCompatActivity() {
     private var binding: ActivityMainBinding? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,9 +29,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view: View = binding!!.root
         setContentView(view)
-
-
-
         val navController=findNavController(R.id.nav_host_fragment)
         binding!!.navigationMenu.setupWithNavController(navController = navController)
         val appBarConfiguration= AppBarConfiguration(setOf(R.id.galleryFragment,

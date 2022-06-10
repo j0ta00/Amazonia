@@ -11,7 +11,10 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.juanjomz.amazonia.R
 
 
-
+/**
+ * Actividad de splash, que muestra la imagen splash cuando se abre la app y se destruye trás esto
+ *
+ * */
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

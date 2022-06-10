@@ -46,8 +46,17 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="notPhotoYet">Press retry to take a photo</string>
+    <string name="imageDeleteError">something went wrong during image deletion</string>
+    <string name="imageDeleteCorrectly">image/s  deleted !!</string>
+    <string name="wrong_credentials">wrong credentials invalid username or password</string>
+    <string name="addSomeSpecies">Your list is empty, add some species!!</string>
+    <string name="message_storage">Message</string>
+    <string name="permissions_not_granted">Don\'t have read permisson</string>
+    <string name="permissions_granted">you have granted permissions</string>
+    <string name="specie_added">Specie added correctly!!</string>
+    <string name="logged_in">Successfully logged in</string>
+    <string name="null_value">null</string>
+    <string name="default_image">default_image</string>
+    <string name="unknow_value">Unknow</string>
 </resources>
